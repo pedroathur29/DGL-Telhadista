@@ -1,0 +1,16 @@
+{
+  "name": "dgl-telhadista",
+  "private": true,
+  "description": "Site da DGL Telhadista e Serviços em Gerais (telhado em 3D com Three.js e GSAP)",
+  "scripts": {
+    "build": "esbuild js/src/app.js --bundle --format=iife --minify --loader:.jpg=dataurl --loader:.webp=dataurl --outfile=js/app.js"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.0"
+  },
+  "dependencies": {
+    "gsap": "3.13.0",
+    "lenis": "1.1.18",
+    "three": "0.170.0"
+  }
+}

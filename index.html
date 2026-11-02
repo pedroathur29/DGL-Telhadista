@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>DGL Telhadista - Telhados no prazo</title>
+  <meta name="description" content="DGL Telhadista e Serviços em Gerais: construção, manutenção e reformas de telhados e coberturas, com entrega dentro do prazo e telhados bem acabados. WhatsApp (19) 99310-1979.">
+  <meta name="theme-color" content="#15110e">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/img/casa.jpg" as="image">
+  <link rel="stylesheet" href="css/style.css">
+  <script>document.documentElement.classList.add('js');try{if(/[?&]animar\b/.test(location.search)||localStorage.getItem('dgl-animar')==='1')document.documentElement.classList.add('force-motion')}catch(e){}</script>
+</head>
+<body class="is-loading">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2Zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.26 8.26 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 4.54 0 8.24 3.7 8.24 8.24 0 4.55-3.7 8.24-8.24 8.24Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.42.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-tile" viewBox="0 0 24 24"><path fill="currentColor" d="M3 20c0-6 4-11 9-11s9 5 9 11h-4c0-4-2.3-7-5-7s-5 3-5 7H3Z"/></symbol>
+  </svg>
+
+  <!-- carregamento: as telhas sendo assentadas -->
+  <div class="loader" aria-hidden="true" data-loader>
+    <div class="loader__tiles">
+      <svg><use href="#i-tile"/></svg><svg><use href="#i-tile"/></svg><svg><use href="#i-tile"/></svg><svg><use href="#i-tile"/></svg><svg><use href="#i-tile"/></svg>
+    </div>
+    <p class="loader__text">Assentando as telhas <span data-loader-count>0</span>%</p>
+  </div>
+
+  <div class="cursor" aria-hidden="true" data-cursor><span class="cursor__label" data-cursor-label></span></div>
+  <div class="progress" aria-hidden="true"><span data-progress></span></div>
+
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="header" data-header>
+    <a class="brand" href="#topo" translate="no" aria-label="DGL Telhadista, voltar ao início" data-magnetic>
+      <span class="brand__mark" aria-hidden="true"><svg><use href="#i-tile"/></svg></span>
+      <span class="brand__name"><b>DGL</b> Telhadista</span>
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <ul class="nav__list">
+        <li><a class="roll" href="#servicos"><span data-text="Serviços">Serviços</span></a></li>
+        <li><a class="roll" href="#diferenciais"><span data-text="Diferenciais">Diferenciais</span></a></li>
+        <li><a class="roll" href="#para-quem"><span data-text="Para quem">Para quem</span></a></li>
+        <li><a class="roll" href="#perguntas"><span data-text="Perguntas">Perguntas</span></a></li>
+      </ul>
+    </nav>
+    <a class="btn btn--small btn--light header__cta" href="#orcamento" data-magnetic><span class="btn__text" data-text="Orçamento">Orçamento</span></a>
+    <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu" data-burger><span></span><span></span></button>
+  </header>
+
+  <div class="menu" id="menu" data-menu aria-hidden="true">
+    <nav class="menu__inner" aria-label="Menu">
+      <ul class="menu__list">
+        <li><a href="#servicos" data-menu-link><span>Serviços</span></a></li>
+        <li><a href="#diferenciais" data-menu-link><span>Diferenciais</span></a></li>
+        <li><a href="#para-quem" data-menu-link><span>Para quem</span></a></li>
+        <li><a href="#perguntas" data-menu-link><span>Perguntas</span></a></li>
+        <li><a href="#orcamento" data-menu-link><span>Orçamento</span></a></li>
+      </ul>
+      <div class="menu__foot" data-menu-foot>
+        <a href="tel:+5519993101979">(19) 99310-1979</a>
+        <a href="mailto:DGLtelhadista@gmail.com">DGLtelhadista@gmail.com</a>
+        <span>Lucas Reis · Sócio diretor</span>
+      </div>
+    </nav>
+  </div>
+
+  <main id="conteudo">
+    <!-- ===== Abertura + serviços: o telhado em 3D se monta conforme a rolagem ===== -->
+    <section class="story" id="topo" aria-label="DGL Telhadista: telhados no prazo" data-story>
+      <div class="story__stage" data-stage>
+        <canvas class="story__canvas" data-canvas aria-hidden="true"></canvas>
+        <!-- sem WebGL ou com movimento reduzido: as ilustrações ficam no lugar da cena -->
+        <div class="story__fallback" aria-hidden="true">
+          <img src="assets/img/casa.jpg" alt="" data-fb="hero">
+          <img src="assets/img/estrutura.jpg" alt="" data-fb="construcao">
+          <img src="assets/img/manutencao.jpg" alt="" data-fb="manutencao">
+          <img src="assets/img/reforma.jpg" alt="" data-fb="reforma">
+        </div>
+        <div class="story__shade" aria-hidden="true"></div>
+
+        <div class="hero" data-hero>
+          <p class="hero__kicker" data-hero-fade><span class="dot" aria-hidden="true"></span>Serviços gerais em telhados · Construção civil</p>
+          <h1 class="hero__title" data-split>
+            <span class="hero__line">Telhados</span>
+            <span class="hero__line hero__line--serif">no prazo.</span>
+          </h1>
+          <div class="hero__bottom">
+            <p class="hero__lead" data-hero-fade>A DGL Telhadista faz construção, manutenção e reformas de telhados e coberturas, com entrega dentro do prazo e telhados bem acabados.</p>
+            <div class="hero__actions" data-hero-fade>
+              <a class="btn btn--accent" href="https://wa.me/5519993101979?text=Ol%C3%A1%2C%20Lucas!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener" data-magnetic data-cursor-text="WhatsApp">
+                <svg class="btn__icon" aria-hidden="true"><use href="#i-wa"/></svg><span class="btn__text" data-text="Chamar no WhatsApp">Chamar no WhatsApp</span>
+              </a>
+              <a class="btn btn--ghost" href="#servicos" data-magnetic><span class="btn__text" data-text="Ver serviços">Ver serviços</span><svg class="btn__icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            </div>
+          </div>
+          <div class="hero__scroll" aria-hidden="true" data-hero-fade><span>Role para montar o telhado</span><i></i></div>
+        </div>
+
+        <div class="chapters" id="servicos" aria-label="Serviços">
+          <h2 class="visually-hidden">Serviços</h2>
+          <article class="chapter" data-chapter="construcao">
+            <img class="chapter__img" src="assets/img/estrutura.jpg" width="1600" height="1000" alt="Ilustração de um telhado em construção" loading="lazy">
+            <p class="chapter__tag">Serviço</p>
+            <h3 class="chapter__title">Construção</h3>
+            <p class="chapter__text">Do madeiramento à última telha: telhados e coberturas novas, entregues dentro do prazo combinado.</p>
+          </article>
+          <article class="chapter" data-chapter="manutencao">
+            <img class="chapter__img" src="assets/img/manutencao.jpg" width="1600" height="1000" alt="Ilustração de telhas sendo trocadas" loading="lazy">
+            <p class="chapter__tag">Serviço</p>
+            <h3 class="chapter__title">Manutenção</h3>
+            <p class="chapter__text">Cuidado com o telhado que você já tem, para ele continuar protegendo a sua casa, a sua obra ou a sua empresa.</p>
+          </article>
+          <article class="chapter" data-chapter="reforma">
+            <img class="chapter__img" src="assets/img/reforma.jpg" width="1600" height="1000" alt="Ilustração de um telhado sendo renovado" loading="lazy">
+            <p class="chapter__tag">Serviço</p>
+            <h3 class="chapter__title">Reformas</h3>
+            <p class="chapter__text">O telhado antigo dá lugar a um telhado novo, firme e bem acabado.</p>
+          </article>
+          <div class="chapters__rail" aria-hidden="true"><span data-rail></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Faixa de valores em movimento ===== -->
+    <section class="marquee" aria-label="Valores da DGL Telhadista">
+      <h2 class="visually-hidden">Valores</h2>
+      <div class="marquee__row" data-marquee="1">
+        <ul class="marquee__track">
+          <li>Confiança</li><li>Qualidade</li><li>Pontualidade</li><li>Capricho</li><li>Segurança</li>
+          <li aria-hidden="true">Confiança</li><li aria-hidden="true">Qualidade</li><li aria-hidden="true">Pontualidade</li><li aria-hidden="true">Capricho</li><li aria-hidden="true">Segurança</li>
+        </ul>
+      </div>
+      <div class="marquee__row marquee__row--alt" data-marquee="-1" aria-hidden="true">
+        <ul class="marquee__track">
+          <li>Entrega dentro do prazo</li><li>Telhados bem acabados</li><li>Construção</li><li>Manutenção</li><li>Reformas</li>
+          <li>Entrega dentro do prazo</li><li>Telhados bem acabados</li><li>Construção</li><li>Manutenção</li><li>Reformas</li>
+        </ul>
+        <div class="values__bar wrap" aria-hidden="true"><span><i data-hscroll-bar></i></span></div>
+      </div>
+    </section>
+
+    <!-- ===== Diferenciais ===== -->
+    <section class="diff" id="diferenciais" aria-labelledby="diff-titulo">
+      <div class="wrap">
+        <h2 class="diff__statement" id="diff-titulo" data-words>O que é combinado, é entregue: dentro do prazo e com telhados bem acabados.</h2>
+        <div class="diff__grid">
+          <article class="feature feature--a" data-tilt>
+            <figure class="feature__media" data-reveal-img><img src="assets/img/estrutura.jpg" width="1600" height="1000" alt="Ilustração de um telhado em construção, com o madeiramento à mostra e as telhas sendo assentadas" loading="lazy" data-parallax></figure>
+            <div class="feature__body">
+              <h3 class="feature__title">Entrega dentro do prazo</h3>
+              <p>A pontualidade é um dos valores da DGL: a obra termina na data combinada.</p>
+            </div>
+          </article>
+          <article class="feature feature--b" data-tilt>
+            <figure class="feature__media" data-reveal-img><img src="assets/img/cumeeira.jpg" width="1600" height="1000" alt="Ilustração da cumeeira e das fileiras de telhas de um telhado pronto" loading="lazy" data-parallax></figure>
+            <div class="feature__body">
+              <h3 class="feature__title">Telhados bem acabados</h3>
+              <p>Capricho em cada fileira de telhas, do beiral à cumeeira.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Valores em rolagem lateral ===== -->
+    <section class="values" aria-labelledby="valores-titulo" data-hscroll>
+      <div class="values__pin" data-hscroll-pin>
+        <div class="values__head wrap">
+          <h2 id="valores-titulo" data-reveal>Cinco valores em <em>cada obra</em></h2>
+          <p data-reveal>Confiança, qualidade, pontualidade, capricho e segurança.</p>
+        </div>
+        <ul class="values__track" data-hscroll-track>
+          <li class="value"><figure><img src="assets/img/casa.jpg" width="1600" height="1000" alt="Ilustração de uma casa com telhado de telhas coloniais ao entardecer" loading="lazy"></figure><div class="value__body"><span class="value__tag">palavra dada</span><h3>Confiança</h3><p>Você fala direto com quem cuida da sua obra.</p></div></li>
+          <li class="value"><figure><img src="assets/img/telhas.jpg" width="1600" height="1000" alt="Ilustração de fileiras de telhas coloniais vistas de perto" loading="lazy"></figure><div class="value__body"><span class="value__tag">feito para durar</span><h3>Qualidade</h3><p>Serviço bem feito, para o telhado durar.</p></div></li>
+          <li class="value"><figure><img src="assets/img/estrutura.jpg" width="1600" height="1000" alt="Ilustração de um telhado em construção" loading="lazy"></figure><div class="value__body"><span class="value__tag">no dia certo</span><h3>Pontualidade</h3><p>Entrega dentro do prazo combinado.</p></div></li>
+          <li class="value"><figure><img src="assets/img/cumeeira.jpg" width="1600" height="1000" alt="Ilustração da cumeeira de um telhado" loading="lazy"></figure><div class="value__body"><span class="value__tag">do beiral à cumeeira</span><h3>Capricho</h3><p>Telhados bem acabados, do beiral à cumeeira.</p></div></li>
+          <li class="value"><figure><img src="assets/img/manutencao.jpg" width="1600" height="1000" alt="Ilustração de telhas sendo trocadas em um telhado" loading="lazy"></figure><div class="value__body"><span class="value__tag">em cada etapa</span><h3>Segurança</h3><p>Cuidado em cada etapa do trabalho no telhado.</p></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== Para quem ===== -->
+    <section class="audience" id="para-quem" aria-labelledby="quem-titulo">
+      <div class="wrap">
+        <div class="audience__head">
+          <h2 id="quem-titulo" data-split-lines>Para quem a DGL <em>trabalha</em></h2>
+          <p data-reveal>Proprietários de residências, profissionais autônomos e empresas que atuam na construção civil, manutenção e reformas em geral, especialmente em telhados e coberturas.</p>
+        </div>
+        <ul class="audience__cards">
+          <li class="card" data-tilt data-cursor-text="Orçamento">
+            <a href="#orcamento" class="card__link" data-pick="Residência">
+              <figure class="card__media" data-reveal-img><img src="assets/img/casa-retrato.jpg" width="1000" height="1250" alt="Ilustração de uma casa com telhado de duas águas" loading="lazy"></figure>
+              <div class="card__body"><h3>Proprietários de residências</h3><span class="card__go">Pedir orçamento <svg aria-hidden="true"><use href="#i-arrow"/></svg></span></div>
+            </a>
+          </li>
+          <li class="card" data-tilt data-cursor-text="Orçamento">
+            <a href="#orcamento" class="card__link" data-pick="Profissional autônomo">
+              <figure class="card__media" data-reveal-img><img src="assets/img/estrutura-retrato.jpg" width="1000" height="1250" alt="Ilustração de uma obra com o telhado sendo montado" loading="lazy"></figure>
+              <div class="card__body"><h3>Profissionais autônomos</h3><span class="card__go">Pedir orçamento <svg aria-hidden="true"><use href="#i-arrow"/></svg></span></div>
+            </a>
+          </li>
+          <li class="card" data-tilt data-cursor-text="Orçamento">
+            <a href="#orcamento" class="card__link" data-pick="Empresa">
+              <figure class="card__media" data-reveal-img><img src="assets/img/galpao-retrato.jpg" width="1000" height="1250" alt="Ilustração de um galpão com cobertura de telhas" loading="lazy"></figure>
+              <div class="card__body"><h3>Empresas da construção civil</h3><span class="card__go">Pedir orçamento <svg aria-hidden="true"><use href="#i-arrow"/></svg></span></div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== Quem cuida ===== -->
+    <section class="about" aria-labelledby="sobre-titulo">
+      <figure class="about__bg" aria-hidden="true"><img src="assets/img/bairro.jpg" width="1600" height="1000" alt="" loading="lazy" data-parallax-strong></figure>
+      <div class="about__inner wrap">
+        <div class="about__card" data-reveal>
+          <p class="about__tag">Quem cuida da sua obra</p>
+          <h2 id="sobre-titulo">Lucas Reis</h2>
+          <p class="about__role">Sócio diretor · DGL Telhadista e Serviços em Gerais</p>
+          <p>Serviços gerais em telhados, na construção civil: construção, manutenção e reformas de telhados e coberturas, com confiança, qualidade, pontualidade, capricho e segurança.</p>
+          <a class="btn btn--accent" href="https://wa.me/5519993101979?text=Ol%C3%A1%2C%20Lucas!%20Vim%20pelo%20site." target="_blank" rel="noopener" data-magnetic><svg class="btn__icon" aria-hidden="true"><use href="#i-wa"/></svg><span class="btn__text" data-text="Falar com o Lucas">Falar com o Lucas</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Perguntas ===== -->
+    <section class="faq" id="perguntas" aria-labelledby="faq-titulo">
+      <div class="wrap faq__grid">
+        <div class="faq__head">
+          <h2 id="faq-titulo" data-split-lines>Perguntas <em>frequentes</em></h2>
+          <p data-reveal>Não achou o que procurava? Chame o Lucas no WhatsApp: <a class="ulink" href="https://wa.me/5519993101979" target="_blank" rel="noopener">(19) 99310-1979</a>.</p>
+        </div>
+        <div class="faq__list" data-accordion>
+          <div class="qa" data-reveal>
+            <h3><button class="qa__q" type="button" aria-expanded="false" aria-controls="qa-1" id="qa-1-b">O que a DGL Telhadista faz?<i aria-hidden="true"></i></button></h3>
+            <div class="qa__a" id="qa-1" role="region" aria-labelledby="qa-1-b" hidden><p>Serviços gerais em telhados, na construção civil: construção, manutenção e reformas de telhados e coberturas.</p></div>
+          </div>
+          <div class="qa" data-reveal>
+            <h3><button class="qa__q" type="button" aria-expanded="false" aria-controls="qa-2" id="qa-2-b">Para quem vocês trabalham?<i aria-hidden="true"></i></button></h3>
+            <div class="qa__a" id="qa-2" role="region" aria-labelledby="qa-2-b" hidden><p>Para proprietários de residências, profissionais autônomos e empresas que atuam na construção civil, manutenção e reformas em geral, especialmente em telhados e coberturas.</p></div>
+          </div>
+          <div class="qa" data-reveal>
+            <h3><button class="qa__q" type="button" aria-expanded="false" aria-controls="qa-3" id="qa-3-b">O que diferencia a DGL?<i aria-hidden="true"></i></button></h3>
+            <div class="qa__a" id="qa-3" role="region" aria-labelledby="qa-3-b" hidden><p>A entrega dentro do prazo e os telhados bem acabados.</p></div>
+          </div>
+          <div class="qa" data-reveal>
+            <h3><button class="qa__q" type="button" aria-expanded="false" aria-controls="qa-4" id="qa-4-b">Com quem eu falo?<i aria-hidden="true"></i></button></h3>
+            <div class="qa__a" id="qa-4" role="region" aria-labelledby="qa-4-b" hidden><p>Com Lucas Reis, sócio diretor: pelo WhatsApp ou telefone <a class="ulink" href="tel:+5519993101979">(19) 99310-1979</a> ou pelo e-mail <a class="ulink" href="mailto:DGLtelhadista@gmail.com">DGLtelhadista@gmail.com</a>.</p></div>
+          </div>
+          <div class="qa" data-reveal>
+            <h3><button class="qa__q" type="button" aria-expanded="false" aria-controls="qa-5" id="qa-5-b">Onde fica a DGL?<i aria-hidden="true"></i></button></h3>
+            <!-- Endereço: inserir quando a empresa enviar -->
+            <div class="qa__a" id="qa-5" role="region" aria-labelledby="qa-5-b" hidden><p>O endereço será informado em breve. Enquanto isso, o atendimento é pelo WhatsApp, pelo telefone e pelo e-mail.</p></div>
+          </div>
+          <div class="qa" data-reveal>
+            <h3><button class="qa__q" type="button" aria-expanded="false" aria-controls="qa-6" id="qa-6-b">A DGL está nas redes sociais?<i aria-hidden="true"></i></button></h3>
+            <div class="qa__a" id="qa-6" role="region" aria-labelledby="qa-6-b" hidden><p>Sim. A DGL Telhadista está no Instagram, no Facebook e no WhatsApp.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Orçamento: formulário + prévia da conversa no WhatsApp ===== -->
+    <section class="quote" id="orcamento" aria-labelledby="orc-titulo">
+      <div class="wrap quote__grid">
+        <div class="quote__form-wrap">
+          <h2 id="orc-titulo" data-split-lines>Peça seu <em>orçamento</em></h2>
+          <p class="quote__lead" data-reveal>Preencha e a mensagem chega pronta no WhatsApp do Lucas.</p>
+          <form class="form" id="form" novalidate data-reveal>
+            <div class="field">
+              <input id="f-nome" name="nome" type="text" autocomplete="name" placeholder=" " required aria-describedby="e-nome">
+              <label for="f-nome">Seu nome</label>
+              <p class="field__err" id="e-nome" aria-live="polite"></p>
+            </div>
+            <div class="field">
+              <input id="f-tel" name="telefone" type="tel" inputmode="tel" autocomplete="tel" placeholder=" " required aria-describedby="e-tel">
+              <label for="f-tel">Telefone ou WhatsApp</label>
+              <p class="field__err" id="e-tel" aria-live="polite"></p>
+            </div>
+            <fieldset class="chips" aria-describedby="e-serv">
+              <legend>Serviço</legend>
+              <label class="chip"><input type="radio" name="servico" value="construção de telhado"><span>Construção</span></label>
+              <label class="chip"><input type="radio" name="servico" value="manutenção do telhado"><span>Manutenção</span></label>
+              <label class="chip"><input type="radio" name="servico" value="reforma do telhado"><span>Reformas</span></label>
+              <p class="field__err" id="e-serv" aria-live="polite"></p>
+            </fieldset>
+            <fieldset class="chips">
+              <legend>Para quem é</legend>
+              <label class="chip"><input type="radio" name="perfil" value="a minha residência" checked><span>Residência</span></label>
+              <label class="chip"><input type="radio" name="perfil" value="uma obra (sou profissional autônomo)"><span>Profissional autônomo</span></label>
+              <label class="chip"><input type="radio" name="perfil" value="a minha empresa"><span>Empresa</span></label>
+            </fieldset>
+            <button class="btn btn--accent btn--block" type="submit" data-magnetic><svg class="btn__icon" aria-hidden="true"><use href="#i-wa"/></svg><span class="btn__text" data-text="Enviar pelo WhatsApp">Enviar pelo WhatsApp</span></button>
+            <p class="form__ok" role="status" data-ok></p>
+          </form>
+        </div>
+
+        <div class="phone" aria-label="Prévia da mensagem que será enviada" data-reveal>
+          <div class="phone__bar"><span class="phone__avatar" aria-hidden="true">LR</span><span><b>Lucas Reis</b><small>DGL Telhadista</small></span></div>
+          <div class="phone__chat">
+            <p class="bubble bubble--in">Olá! Aqui é o Lucas, da DGL Telhadista. Como posso ajudar?</p>
+            <p class="bubble bubble--out" data-preview>Olá, Lucas! Meu nome é <b data-out="nome">…</b>. Preciso de <b data-out="servico">um serviço</b> para <b data-out="perfil">a minha residência</b>. Meu telefone é <b data-out="telefone">…</b>.</p>
+            <p class="bubble bubble--typing" aria-hidden="true" data-typing><i></i><i></i><i></i></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer__top">
+        <a class="footer__big" href="https://wa.me/5519993101979" target="_blank" rel="noopener" data-cursor-text="WhatsApp">
+          <span class="footer__label">Ligue ou chame no WhatsApp</span>
+          <span class="footer__phone" data-wave>(19) 99310-1979</span>
+        </a>
+      </div>
+      <div class="footer__cols">
+        <div>
+          <h2 class="footer__h">Contato</h2>
+          <a class="ulink" href="mailto:DGLtelhadista@gmail.com">DGLtelhadista@gmail.com</a>
+          <span>Lucas Reis, sócio diretor</span>
+          <span>Endereço: em breve</span>
+        </div>
+        <div>
+          <h2 class="footer__h">Redes</h2>
+          <a class="ulink" href="https://wa.me/5519993101979" target="_blank" rel="noopener">WhatsApp</a>
+          <!-- Inserir os links reais do Instagram e do Facebook -->
+          <span>Instagram</span>
+          <span>Facebook</span>
+        </div>
+        <div>
+          <h2 class="footer__h">Navegue</h2>
+          <a class="ulink" href="#servicos">Serviços</a>
+          <a class="ulink" href="#diferenciais">Diferenciais</a>
+          <a class="ulink" href="#para-quem">Para quem</a>
+          <a class="ulink" href="#orcamento">Orçamento</a>
+        </div>
+      </div>
+      <p class="footer__word" aria-hidden="true" translate="no">DGL Telhadista</p>
+      <div class="footer__last">
+        <p><span translate="no">DGL Telhadista e Serviços em Gerais</span> · © 2026 · Ilustrações 3D criadas para o site (fictícias)</p>
+        <a class="totop" href="#topo" data-magnetic>Voltar ao topo <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+    </div>
+  </footer>
+
+  <a class="wa-float" href="https://wa.me/5519993101979?text=Ol%C3%A1%2C%20Lucas!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener" aria-label="Conversar com a DGL pelo WhatsApp" data-float><svg aria-hidden="true"><use href="#i-wa"/></svg></a>
+
+  <button class="motion-toggle" type="button" data-motion-toggle hidden></button>
+  <script src="js/app.js" defer></script>
+</body>
+</html>
