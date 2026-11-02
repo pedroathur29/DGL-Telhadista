@@ -117,7 +117,7 @@ function runLoader() {
   if (reduce) { loader.remove(); document.body.classList.remove('is-loading'); if (roof) roof.state.build = 1; return; }
   splitHero();
   gsap.set('[data-hero-fade], .header', { autoAlpha: 1 });
-  const tiles = $$('.loader__tiles svg');
+  const tiles = $$('.loader__tiles img, .loader__tiles svg');
   const n = { v: 0 };
   const tl = gsap.timeline();
   tl.to(tiles, { y: 0, rotate: 0, opacity: 1, duration: 0.6, stagger: 0.14, ease: 'back.out(2)' }, 0)

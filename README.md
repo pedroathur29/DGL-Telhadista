@@ -27,6 +27,7 @@ Site de uma página, feito do zero (sem Bootstrap). Basta abrir o `index.html`: 
   - `textures/`: texturas geradas pelo próprio `roof-scene.js` e salvas em WebP
   - `vendor/ez-tree/`: gerador de árvores ez-tree (MIT, Daniel Greenheck), reduzido às texturas de carvalho
     (casca: Poly Haven, CC0) e folhas de carvalho e freixo
+- `assets/logo.svg`: logo da DGL em vetor (azul #0147af e vermelho #fa1b1b), usada no cabeçalho, no carregamento, no rodapé e no ícone da aba (`assets/favicon.svg`)
 - `assets/img/`: ilustrações 3D renderizadas a partir da mesma cena (fictícias)
 - `assets/fonts/`: Bricolage Grotesque (licença OFL), a única fonte do site
 
@@ -44,5 +45,4 @@ Bibliotecas: Three.js (MIT), GSAP (licença padrão gratuita da GreenSock), Leni
 ## Pendências do cliente
 - Endereço (pergunta "Onde fica a DGL?" e rodapé)
 - Links do Instagram e do Facebook (rodapé)
-- Logotipo (cabeçalho)
 - Fotos reais das obras, se quiser substituir as ilustrações
