@@ -28,7 +28,7 @@ Site de uma página, feito do zero (sem Bootstrap). Basta abrir o `index.html`: 
   - `vendor/ez-tree/`: gerador de árvores ez-tree (MIT, Daniel Greenheck), reduzido às texturas de carvalho
     (casca: Poly Haven, CC0) e folhas de carvalho e freixo
 - `assets/img/`: ilustrações 3D renderizadas a partir da mesma cena (fictícias)
-- `assets/fonts/`: Bricolage Grotesque e Instrument Serif (licença OFL)
+- `assets/fonts/`: Bricolage Grotesque (licença OFL), a única fonte do site
 
 Para gerar o `js/app.js` de novo depois de mexer em `js/src/`:
 ```

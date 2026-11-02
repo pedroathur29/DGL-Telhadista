@@ -190,14 +190,16 @@ $$('[data-marquee]').forEach((row) => {
   track.parentNode.appendChild(track.cloneNode(true)).setAttribute('aria-hidden', 'true');
   const tracks = $$('.marquee__track', row);
   if (reduce) return;
-  const loop = gsap.to(tracks, { xPercent: -100, duration: 28, ease: 'none', repeat: -1 });
+  const loop = gsap.to(tracks, { xPercent: -100, duration: 52, ease: 'none', repeat: -1 });
   if (dir < 0) { loop.progress(0.5); loop.timeScale(-1); }
   ScrollTrigger.create({
     trigger: row, start: 'top bottom', end: 'bottom top',
     onUpdate: (self) => {
-      const v = self.getVelocity() / 300;
-      gsap.to(loop, { timeScale: dir * (1 + Math.min(Math.abs(v), 6)) * (self.direction || 1), duration: 0.3, overwrite: true });
-      gsap.to(tracks, { skewX: gsap.utils.clamp(-8, 8, -v * 2), duration: 0.4, overwrite: 'auto' });
+      const v = self.getVelocity() / 600;
+      gsap.to(loop, { timeScale: dir * (1 + Math.min(Math.abs(v), 1.8)), duration: 0.4, overwrite: true,
+        onComplete: () => gsap.to(loop, { timeScale: dir, duration: 1.2, ease: 'power2.out' }) });
+      gsap.to(tracks, { skewX: gsap.utils.clamp(-3, 3, -v * 1.2), duration: 0.5, overwrite: 'auto',
+        onComplete: () => gsap.to(tracks, { skewX: 0, duration: 0.8 }) });
     }
   });
 });

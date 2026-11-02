@@ -410,19 +410,6 @@ export function createRoofScene(canvas, options = {}) {
   scene.add(pallet);
   const palletPos = pallet.position.clone().add(new THREE.Vector3(0, 0.6, 0));
 
-  // escada encostada na calha durante a obra: trilhos lado a lado (eixo z), degraus atravessando
-  const ladder = new THREE.Group();
-  const al = new THREE.MeshStandardMaterial({ color: '#c3c7ca', roughness: 0.4, metalness: 0.8 });
-  const rubber = new THREE.MeshStandardMaterial({ color: '#2a2724', roughness: 0.9 });
-  const LEN = 3.5, LEAN = 0.26, HALF = 0.22;
-  [-HALF, HALF].forEach((z) => {
-    const rail = new THREE.Mesh(new THREE.BoxGeometry(0.075, LEN, 0.035), al); rail.position.set(0, LEN / 2, z); rail.castShadow = true; ladder.add(rail);
-    const foot = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.06), rubber); foot.position.set(0, 0.025, z); ladder.add(foot);
-  });
-  for (let i = 0; i < 11; i++) { const rung = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, HALF * 2, 8), al); rung.rotation.x = Math.PI / 2; rung.position.set(0, 0.3 + i * 0.3, 0); rung.castShadow = true; ladder.add(rung); }
-  // base afastada da parede; o topo encosta logo depois da calha e passa um pouco do beiral
-  ladder.position.set(main.dims.w / 2 + 0.6 + 0.25 + 0.7, 0, 1.2); ladder.rotation.z = LEAN; scene.add(ladder);
-
   // árvores e arbustos (ez-tree): folhas balançam ao vento
   const trees = [];
   const addTree = (preset, seedN, x, z, s, ry = 0) => {
@@ -584,7 +571,7 @@ export function createRoofScene(canvas, options = {}) {
     scene.updateMatrixWorld();
     const key = state.build.toFixed(4) + state.lift.toFixed(4) + state.renew.toFixed(4) + state.glow.toFixed(4);
     if (key !== lastKey) { houses.forEach(applyHouse); lastKey = key; }
-    ladder.visible = state.build < 0.995; pallet.visible = state.build < 0.995;
+    pallet.visible = state.build < 0.995;
     trees.forEach((t) => t.update(state.time));
     if (scene.userData.grassMat && scene.userData.grassMat.userData.shader) scene.userData.grassMat.userData.shader.uniforms.uTime.value = state.time;
     houses.forEach((h) => { h.interior.emissiveIntensity = 0.22; });
