@@ -370,7 +370,7 @@ if (form) {
     typingTimer = setTimeout(() => { typing.classList.remove('is-on'); preview.classList.remove('pop'); void preview.offsetWidth; preview.classList.add('pop'); }, 550);
   };
   const regras = {
-    nome: [nome, () => nome.value.trim().length > 1, 'Escreva o seu nome para o Lucas saber com quem fala.'],
+    nome: [nome, () => nome.value.trim().length > 1, 'Escreva o seu nome para a DGL saber com quem fala.'],
     telefone: [tel, () => tel.value.replace(/\D/g, '').length >= 10, 'Escreva um telefone com DDD, por exemplo (19) 99999-9999.'],
     servico: [null, () => !!valor('servico'), 'Escolha construção, manutenção ou reformas.']
   };
@@ -409,7 +409,7 @@ if (form) {
       (input || form.querySelector('input[name="servico"]')).focus();
       return;
     }
-    const texto = `Olá, Lucas! Vim pelo site da DGL Telhadista.\n\nMeu nome é ${valor('nome')}. Preciso de ${valor('servico')} para ${valor('perfil')}. Meu telefone é ${valor('telefone')}.`;
+    const texto = `Olá, DGL! Vim pelo site da DGL Telhadista.\n\nMeu nome é ${valor('nome')}. Preciso de ${valor('servico')} para ${valor('perfil')}. Meu telefone é ${valor('telefone')}.`;
     window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`, '_blank', 'noopener');
     ok.textContent = 'Pronto! Abrimos o WhatsApp com a sua mensagem.';
   });
