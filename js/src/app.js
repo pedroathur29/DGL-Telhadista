@@ -109,7 +109,7 @@ function intro() {
   const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
   tl.from(heroChars, { yPercent: 115, rotate: 6, duration: 1.4, stagger: 0.035 }, 0)
     .from('[data-hero-fade]', { y: 30, autoAlpha: 0, duration: 1.1, stagger: 0.1 }, 0.35)
-    .from('.header', { y: -30, autoAlpha: 0, duration: 1 }, 0.4);
+    .from('.header', { y: -30, autoAlpha: 0, duration: 1, clearProps: 'transform' }, 0.4);
   if (roof) tl.to(roof.state, { build: 1, duration: 3.2, ease: 'power2.out' }, 0.1);
 }
 

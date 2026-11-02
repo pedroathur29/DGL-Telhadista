@@ -410,12 +410,18 @@ export function createRoofScene(canvas, options = {}) {
   scene.add(pallet);
   const palletPos = pallet.position.clone().add(new THREE.Vector3(0, 0.6, 0));
 
-  // escada encostada na parede durante a obra
+  // escada encostada na calha durante a obra: trilhos lado a lado (eixo z), degraus atravessando
   const ladder = new THREE.Group();
   const al = new THREE.MeshStandardMaterial({ color: '#c3c7ca', roughness: 0.4, metalness: 0.8 });
-  [-0.24, 0.24].forEach((x) => { const rail = new THREE.Mesh(new THREE.BoxGeometry(0.05, 4.2, 0.08), al); rail.position.set(x, 2.1, 0); rail.castShadow = true; ladder.add(rail); });
-  for (let i = 0; i < 13; i++) { const rung = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.48, 8), al); rung.rotation.z = Math.PI / 2; rung.position.y = 0.25 + i * 0.3; ladder.add(rung); }
-  ladder.position.set(main.dims.w / 2 + 0.75, 0, 1.2); ladder.rotation.z = 0.18; scene.add(ladder);
+  const rubber = new THREE.MeshStandardMaterial({ color: '#2a2724', roughness: 0.9 });
+  const LEN = 3.5, LEAN = 0.26, HALF = 0.22;
+  [-HALF, HALF].forEach((z) => {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(0.075, LEN, 0.035), al); rail.position.set(0, LEN / 2, z); rail.castShadow = true; ladder.add(rail);
+    const foot = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.06), rubber); foot.position.set(0, 0.025, z); ladder.add(foot);
+  });
+  for (let i = 0; i < 11; i++) { const rung = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, HALF * 2, 8), al); rung.rotation.x = Math.PI / 2; rung.position.set(0, 0.3 + i * 0.3, 0); rung.castShadow = true; ladder.add(rung); }
+  // base afastada da parede; o topo encosta logo depois da calha e passa um pouco do beiral
+  ladder.position.set(main.dims.w / 2 + 0.6 + 0.25 + 0.7, 0, 1.2); ladder.rotation.z = LEAN; scene.add(ladder);
 
   // árvores e arbustos (ez-tree): folhas balançam ao vento
   const trees = [];
