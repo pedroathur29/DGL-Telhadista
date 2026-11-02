@@ -277,20 +277,6 @@ if (fine && !reduce) {
     el.addEventListener('pointerleave', () => { gsap.to(el, { x: 0, y: 0, duration: 0.9, ease: 'elastic.out(1, 0.4)' }); });
   });
 
-  // cursor
-  const cursor = $('[data-cursor]');
-  const label = $('[data-cursor-label]');
-  const cx = gsap.quickTo(cursor, 'x', { duration: 0.35, ease: 'power3' });
-  const cy = gsap.quickTo(cursor, 'y', { duration: 0.35, ease: 'power3' });
-  window.addEventListener('pointermove', (e) => { cx(e.clientX); cy(e.clientY); cursor.classList.add('is-on'); });
-  document.addEventListener('pointerleave', () => cursor.classList.remove('is-on'));
-  document.addEventListener('pointerover', (e) => {
-    const withText = e.target.closest('[data-cursor-text]');
-    const link = e.target.closest('a, button, label.chip');
-    cursor.classList.toggle('is-label', !!withText);
-    cursor.classList.toggle('is-link', !withText && !!link);
-    label.textContent = withText ? withText.dataset.cursorText : '';
-  });
 }
 
 /* ---------- cabeçalho, progresso e botão flutuante ---------- */
