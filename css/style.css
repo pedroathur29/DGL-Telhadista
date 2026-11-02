@@ -113,7 +113,7 @@ html:not(.js) .loader { display: none; }
 .btn:active { transform: scale(0.97); }
 .btn--accent { --bg: var(--telha); --fg: #fff; --fill: var(--noite); }
 /* WhatsApp em verde: a pessoa reconhece na hora para onde o botão leva */
-.btn--wa { --bg: var(--verde); --fg: #fff; --fill: #1c5f3d; }
+.btn--wa { --bg: var(--verde); --fg: #fff; --fill: #1c5f3d; background: var(--verde); color: #fff; }
 .btn--light { --bg: var(--areia); --fg: var(--noite); --fill: var(--telha); }
 .btn--ghost { --bg: transparent; --fg: var(--areia); --fill: var(--areia); box-shadow: inset 0 0 0 1.5px rgba(236, 232, 225, 0.5); }
 .btn--small { min-height: 44px; padding: 0 20px; font-size: var(--fs-small); }
@@ -192,7 +192,7 @@ html:not(.js) .loader { display: none; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(169, 179, 194, 0.55); } 70% { box-shadow: 0 0 0 12px rgba(169, 179, 194, 0); } 100% { box-shadow: 0 0 0 0 rgba(169, 179, 194, 0); } }
 .hero__title { font-size: var(--fs-hero); line-height: 0.9; letter-spacing: -0.045em; font-weight: 750; }
 .hero__line { display: block; }
-.hero__line--accent { color: var(--areia); font-weight: 400; }
+.hero__line--accent { color: var(--brasa); font-weight: 400; }
 .hero__title, .hero__lead, .hero__kicker { text-shadow: 0 2px 30px rgba(8, 14, 26, 0.55); }
 .hero__bottom { display: grid; gap: 22px; }
 .hero__lead { max-width: 38ch; font-size: var(--fs-body); color: var(--light-soft); font-weight: 300; }
