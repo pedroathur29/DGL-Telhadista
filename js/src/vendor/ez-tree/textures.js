@@ -1,10 +1,10 @@
 // Versão reduzida do textures.js do ez-tree (MIT, Daniel Greenheck):
 // só a casca de carvalho (Poly Haven, CC0) e as folhas de carvalho e freixo, para o site ficar leve.
 import * as THREE from 'three';
-import oakAo from './assets/oak_ao.jpg';
-import oakColor from './assets/oak_color.jpg';
-import oakNormal from './assets/oak_normal.jpg';
-import oakRoughness from './assets/oak_roughness.jpg';
+import oakAo from './assets/oak_ao.webp';
+import oakColor from './assets/oak_color.webp';
+import oakNormal from './assets/oak_normal.webp';
+import oakRoughness from './assets/oak_roughness.webp';
 import ashLeaves from './assets/ash_leaves.webp';
 import oakLeaves from './assets/oak_leaves.webp';
 

@@ -323,7 +323,7 @@ function buildHouse(opt, T, q) {
 export function createRoofScene(canvas, options = {}) {
   const opt = Object.assign({ pixelRatio: Math.min(window.devicePixelRatio || 1, 2), quality: 'high', houses: 'single', preset: 'hero', still: false }, options);
   const high = opt.quality === 'high';
-  const q = { texSize: opt.texSize || (high ? 1024 : 512), tileSegA: high ? 10 : 7, tileSegL: high ? 4 : 2, shadow: high ? 4096 : 2048, grass: opt.grass !== undefined ? opt.grass : (high ? 60000 : 14000) };
+  const q = { texSize: opt.texSize || (high ? 1024 : 512), tileSegA: high ? 10 : 7, tileSegL: high ? 4 : 2, shadow: high ? 4096 : 2048, grass: opt.grass !== undefined ? opt.grass : (high ? 40000 : 12000) };
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: opt.still });
   renderer.setPixelRatio(opt.pixelRatio);
@@ -332,6 +332,8 @@ export function createRoofScene(canvas, options = {}) {
   renderer.toneMappingExposure = 0.46;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // a sombra só é recalculada quando as telhas se mexem (e de vez em quando, pelo balanço das folhas)
+  renderer.shadowMap.autoUpdate = false; renderer.shadowMap.needsUpdate = true;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 2000);
@@ -565,12 +567,14 @@ export function createRoofScene(canvas, options = {}) {
     if (composer) { composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
   }
 
-  let lastKey = '';
+  let lastKey = '', frameN = 0;
   function render(dt = 1 / 60) {
     state.time += dt;
     scene.updateMatrixWorld();
     const key = state.build.toFixed(4) + state.lift.toFixed(4) + state.renew.toFixed(4) + state.glow.toFixed(4);
-    if (key !== lastKey) { houses.forEach(applyHouse); lastKey = key; }
+    frameN++;
+    if (key !== lastKey) { houses.forEach(applyHouse); lastKey = key; renderer.shadowMap.needsUpdate = true; }
+    else if (frameN % 5 === 0) renderer.shadowMap.needsUpdate = true;
     pallet.visible = state.build < 0.995;
     trees.forEach((t) => t.update(state.time));
     if (scene.userData.grassMat && scene.userData.grassMat.userData.shader) scene.userData.grassMat.userData.shader.uniforms.uTime.value = state.time;

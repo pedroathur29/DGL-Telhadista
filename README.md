@@ -21,17 +21,17 @@ Site de uma página, feito do zero (sem Bootstrap). Basta abrir o `index.html`: 
 
 ## Estrutura
 - `index.html`, `css/style.css`
-- `js/app.js`: arquivo final (gerado). As fontes estão em `js/src/`:
+- `js/app.js` (página e animações, ~150 KB) e `js/scene.js` (cena 3D, carregada depois da página): arquivos finais, gerados. As fontes estão em `js/src/` (`scene-entry.js` monta o `js/scene.js`):
   - `app.js`: animações e interações
   - `roof-scene.js`: a cena 3D
   - `textures/`: texturas geradas pelo próprio `roof-scene.js` e salvas em WebP
   - `vendor/ez-tree/`: gerador de árvores ez-tree (MIT, Daniel Greenheck), reduzido às texturas de carvalho
     (casca: Poly Haven, CC0) e folhas de carvalho e freixo
 - `assets/logo.svg`: logo da DGL em vetor (azul #0147af e vermelho #fa1b1b), usada no cabeçalho, no carregamento, no rodapé e no ícone da aba (`assets/favicon.svg`)
-- `assets/img/`: ilustrações 3D renderizadas a partir da mesma cena (fictícias)
+- `assets/img/`: ilustrações 3D renderizadas a partir da mesma cena (fictícias), em WebP com duas larguras; o navegador escolhe a menor que serve para a tela
 - `assets/fonts/`: Archivo (licença OFL), a única fonte do site
 
-Para gerar o `js/app.js` de novo depois de mexer em `js/src/`:
+Para gerar o `js/app.js` e o `js/scene.js` de novo depois de mexer em `js/src/`:
 ```
 npm install
 npm run build

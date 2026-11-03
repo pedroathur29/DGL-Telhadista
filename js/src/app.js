@@ -1,12 +1,11 @@
 /* DGL Telhadista · animações e interações
    GSAP + ScrollTrigger + SplitText para o movimento, Lenis para a rolagem suave
-   e Three.js (roof-scene.js) para o telhado em 3D. Empacotado com esbuild em js/app.js. */
+   e Three.js (roof-scene.js) para o telhado em 3D. Empacotado com esbuild em dois arquivos:
+   js/app.js (página e animações, carrega primeiro) e js/scene.js (cena 3D, carregada em seguida). */
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
-import { createRoofScene } from './roof-scene.js';
-import BAKED from './textures/index.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -43,15 +42,33 @@ $$('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
   if (hash !== '#topo') { const alvo = $(hash); if (alvo) setTimeout(() => { alvo.setAttribute('tabindex', '-1'); alvo.focus({ preventScroll: true }); }, 900); }
 }));
 
+/* ---------- cena 3D: o arquivo pesado (three.js e texturas) carrega depois da página ---------- */
+const want3D = !reduce && !/sem3d/.test(location.search);
+const sceneReady = new Promise((resolve) => {
+  if (!want3D) return resolve(null);
+  if (window.DGLScene) return resolve(window.DGLScene);
+  root.classList.add('scene-wait');
+  const me = document.querySelector('script[src*="js/app.js"]');
+  const s = document.createElement('script');
+  s.src = me ? me.getAttribute('src').replace('app.js', 'scene.js') : 'js/scene.js';
+  s.async = true;
+  s.onload = () => resolve(window.DGLScene || null);
+  s.onerror = () => resolve(null);
+  document.head.appendChild(s);
+});
+// imagens de reserva da história: só baixam se o 3D não for usado
+const loadFallbacks = () => $$('[data-fb][data-src]').forEach((img) => { img.srcset = img.dataset.srcset; img.src = img.dataset.src; img.removeAttribute('data-src'); });
+let introDone = false;
 /* ---------- cena 3D ---------- */
 const story = $('[data-story]');
 const canvas = $('[data-canvas]');
 let roof = null;
 const isMobile = window.innerWidth < 760;
 if (reduce) story.classList.add('is-static');
-function initRoof() {
+function initRoof(scene) {
   if (reduce) return;
-  if (/sem3d/.test(location.search)) { root.classList.add('no-webgl'); return; }
+  if (!scene) { root.classList.add('no-webgl'); root.classList.remove('scene-wait'); loadFallbacks(); return; }
+  const { createRoofScene, BAKED } = scene;
   try {
     // ?qualidade=baixa força a versão leve (útil para testar em máquinas sem placa de vídeo)
     const forcedLow = /qualidade=baixa/.test(location.search);
@@ -60,13 +77,15 @@ function initRoof() {
   } catch (err) {
     roof = null;
   }
-  if (!roof) { root.classList.add('no-webgl'); return; }
+  if (!roof) { root.classList.add('no-webgl'); root.classList.remove('scene-wait'); loadFallbacks(); return; }
+  if (introDone) gsap.to(roof.state, { build: 1, duration: 3.2, ease: 'power2.out' });
 
   const resize = () => roof.resize(canvas.clientWidth, canvas.clientHeight);
   resize();
   window.addEventListener('resize', resize);
   // telas estreitas: câmera um pouco mais afastada para a casa caber
-  if (isMobile) Object.values(roof.shots).forEach((s) => { s.pos = s.pos.map((v, i) => (i === 1 ? v * 1.15 : v * 1.3)); });
+  // e alvo mais baixo, para a casa subir na tela e ficar acima dos textos e dos cartões de serviço
+  if (isMobile) Object.entries(roof.shots).forEach(([k, s]) => { s.pos = s.pos.map((v, i) => (i === 1 ? v * 1.15 : v * 1.3)); s.look = s.look.slice(); s.look[1] -= k === 'hero' ? 0.8 : 1.9; });
   roof.setShot('hero');
 
   // paralaxe com o mouse e uma órbita bem lenta
@@ -82,6 +101,7 @@ function initRoof() {
     roof.state.my += (-pointer.y * 1.4 - roof.state.my) * 0.05;
     roof.state.orbit = Math.sin(time * 0.12) * 0.35;
     roof.render(Math.min(deltaMs, 50) / 1000);
+    if (root.classList.contains('scene-wait')) root.classList.remove('scene-wait');
     frames++; if (deltaMs > 34) slow++;
     if (frames === 90) {
       if (slow > 45 && degraded < 2) { roof.degrade(++degraded); resize(); }
@@ -111,6 +131,7 @@ function intro() {
     .from('[data-hero-fade]', { y: 30, autoAlpha: 0, duration: 1.1, stagger: 0.1 }, 0.35)
     .from('.header', { y: -30, autoAlpha: 0, duration: 1, clearProps: 'transform' }, 0.4);
   if (roof) tl.to(roof.state, { build: 1, duration: 3.2, ease: 'power2.out' }, 0.1);
+  introDone = true;
 }
 
 function runLoader() {
@@ -130,7 +151,7 @@ const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Prom
 fontsReady.then(() => {
   runLoader();
   // a cena 3D é montada logo depois que a tela de carregamento aparece
-  setTimeout(() => { initRoof(); setupStory(); ScrollTrigger.refresh(); }, 120);
+  setTimeout(() => sceneReady.then((scene) => { initRoof(scene); setupStory(); ScrollTrigger.refresh(); }), 120);
 });
 
 /* ---------- a história: o telhado em 3D conta os serviços ---------- */
