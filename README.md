@@ -45,5 +45,4 @@ Importe o repositório em vercel.com/new, deixe "Framework Preset" em **Other** 
 Bibliotecas: Three.js (MIT), GSAP (licença padrão gratuita da GreenSock), Lenis (MIT), ez-tree (MIT).
 
 ## Pendências do cliente
-- Endereço (pergunta "Onde fica a DGL?" e rodapé)
 - Link do Instagram (rodapé e perguntas)

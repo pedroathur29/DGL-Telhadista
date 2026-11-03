@@ -254,6 +254,24 @@ html:not(.js) .loader { display: none; }
 .marquee__row--alt .marquee__track li { font-weight: 500; letter-spacing: -0.035em; color: var(--light-soft); font-size: clamp(1.7rem, 0.8rem + 3.4vw, 4.2rem); }
 .marquee__row--alt .marquee__track li::after { background: var(--ouro); }
 
+/* ---------- outros serviços e área de atendimento ---------- */
+.extra { position: relative; z-index: 2; background: var(--noite-2); padding: clamp(56px, 7vw, 96px) 0; }
+.extra__grid { display: grid; gap: clamp(20px, 3vw, 40px); }
+.extra__title { font-size: var(--fs-h3); }
+.extra__item { padding-top: 18px; border-top: 1px solid var(--line-light); display: grid; gap: 8px; }
+.extra__item h3 { font-size: clamp(1.3rem, 1rem + 1vw, 1.8rem); letter-spacing: -0.02em; }
+.extra__item p { color: var(--light-soft); max-width: 42ch; }
+.area { position: relative; z-index: 2; background: var(--noite-3); padding: clamp(48px, 6vw, 80px) 0; }
+.area__inner { display: grid; gap: 24px; align-items: center; }
+.area__tag { font-size: var(--fs-small); font-weight: 600; color: var(--brasa); margin-bottom: 8px; }
+.area__title { font-size: clamp(1.8rem, 1.2rem + 2.4vw, 3.4rem); }
+.area__text { margin-top: 10px; color: var(--light-soft); max-width: 46ch; }
+.area .btn { justify-self: start; }
+@media (min-width: 56em) {
+  .extra__grid { grid-template-columns: 1fr 1fr 1fr; align-items: start; }
+  .area__inner { grid-template-columns: 1fr auto; }
+}
+
 /* ---------- trabalhos (fotos reais) ---------- */
 .works { position: relative; z-index: 2; background: var(--noite); padding: clamp(80px, 10vw, 160px) 0; }
 .works__head { display: grid; gap: 18px; margin-bottom: clamp(32px, 5vw, 64px); }
