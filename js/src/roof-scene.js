@@ -537,7 +537,8 @@ export function createRoofScene(canvas, options = {}) {
     }
     for (let i = 0; i < h.ridgeBase.length; i++) {
       const rb = h.ridgeBase[i]; const t = clamp01((B * 1.12 - rb.order) / 0.08);
-      tp.copy(rb.p); tp.y += (1 - smooth(t)) * 1.6; ts.setScalar(t > 0 ? 1 : 0);
+      // cada peça da cumeeira desce só um pouco e cresce até o lugar (antes ficava uma fileira flutuando 1,6 m acima)
+      const k = smooth(t); tp.copy(rb.p); tp.y += (1 - k) * 0.3; ts.setScalar(t > 0 ? 0.6 + 0.4 * k : 0);
       tm.compose(tp, rb.q, ts); h.ridgeMesh.setMatrixAt(i, tm);
       tc.copy(rb.color).multiply(OLD).lerp(rb.color, smooth(clamp01(state.renew * 2.3 - 0.9))); h.ridgeMesh.setColorAt(i, tc);
     }

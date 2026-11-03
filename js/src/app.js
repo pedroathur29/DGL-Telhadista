@@ -63,6 +63,7 @@ const sceneReady = new Promise((resolve) => {
 // imagens de reserva da história: só baixam se o 3D não for usado
 const loadFallbacks = () => $$('[data-fb][data-src]').forEach((img) => { img.srcset = img.dataset.srcset; img.src = img.dataset.src; img.removeAttribute('data-src'); });
 let introDone = false;
+let buildIntro = null;
 /* ---------- cena 3D ---------- */
 const story = $('[data-story]');
 const canvas = $('[data-canvas]');
@@ -82,7 +83,8 @@ function initRoof(scene) {
     roof = null;
   }
   if (!roof) { root.classList.add('no-webgl'); root.classList.remove('scene-wait'); loadFallbacks(); return; }
-  if (introDone) gsap.to(roof.state, { build: 1, duration: 3.2, ease: 'power2.out' });
+  if (/[?&]debug\b/.test(location.search)) window.__dglRoof = roof;
+  if (introDone) buildIntro = gsap.to(roof.state, { build: 1, duration: 3.2, ease: 'power2.out' });
 
   const resize = () => roof.resize(canvas.clientWidth, canvas.clientHeight);
   resize();
@@ -134,7 +136,7 @@ function intro() {
   tl.from(heroChars, { yPercent: 115, rotate: 6, duration: 1.4, stagger: 0.035 }, 0)
     .from('[data-hero-fade]', { y: 30, autoAlpha: 0, duration: 1.1, stagger: 0.1 }, 0.35)
     .from('.header', { y: -30, autoAlpha: 0, duration: 1, clearProps: 'transform' }, 0.4);
-  if (roof) tl.to(roof.state, { build: 1, duration: 3.2, ease: 'power2.out' }, 0.1);
+  if (roof) buildIntro = gsap.to(roof.state, { build: 1, duration: 3.2, ease: 'power2.out', delay: 0.1 });
   introDone = true;
 }
 
@@ -173,6 +175,8 @@ function setupStory() {
       trigger: story, start: 'top top', end: 'bottom bottom', scrub: 1.1,
       onUpdate: (self) => {
         const p = self.progress;
+        // rolou para dentro da história: a montagem da entrada termina na hora e a rolagem assume
+        if (buildIntro && p > 0.03) { buildIntro.progress(1).kill(); buildIntro = null; }
         showFallback(p < 0.14 ? 'hero' : p < 0.42 ? 'construcao' : p < 0.7 ? 'manutencao' : 'reforma');
       }
     }
@@ -192,7 +196,9 @@ function setupStory() {
 
   // construção: o telhado é desmontado e volta a ser montado com a rolagem
   cam('construcao', 0.06, 0.12);
-  if (roof) tl.to(roof.state, { build: 0.18, duration: 0.08, ease: 'power1.in' }, 0.08).to(roof.state, { build: 1, duration: 0.24, ease: 'none' }, 0.17);
+  // valores de partida explícitos: se a pessoa rolar enquanto o telhado ainda se monta na entrada,
+  // a volta ao topo mostra o telhado completo (antes ficava travado no meio, com a cumeeira flutuando)
+  if (roof) tl.fromTo(roof.state, { build: 1 }, { build: 0.18, duration: 0.08, ease: 'power1.in', immediateRender: false }, 0.08).fromTo(roof.state, { build: 0.18 }, { build: 1, duration: 0.24, ease: 'none', immediateRender: false }, 0.17);
   cardIn(chapters[0], 0.14); cardOut(chapters[0], 0.4);
 
   // manutenção: algumas telhas saem, ganham cor nova e voltam ao lugar
