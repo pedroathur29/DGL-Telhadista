@@ -435,8 +435,21 @@ if (form) {
       return;
     }
     const texto = `Olá, DGL! Vim pelo site da DGL Telhadista.\n\nMeu nome é ${valor('nome')}. Preciso de ${valor('servico')} para ${valor('perfil')}. Meu telefone é ${valor('telefone')}.`;
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`, '_blank', 'noopener');
-    ok.textContent = 'Pronto! Abrimos o WhatsApp com a sua mensagem.';
+    const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
+    // o site não tem como saber se a mensagem foi enviada: só abre o WhatsApp e sempre deixa um link de reserva
+    let aba = null;
+    try { aba = window.open(url, '_blank'); if (aba) aba.opener = null; } catch (err) { aba = null; }
+    ok.replaceChildren();
+    const link = document.createElement('a');
+    link.className = 'ulink'; link.href = url; link.target = '_blank'; link.rel = 'noopener';
+    if (aba) {
+      ok.append('O WhatsApp foi aberto com a sua mensagem. Para concluir, toque em enviar por lá. Não abriu? ');
+      link.textContent = 'Abrir o WhatsApp';
+    } else {
+      ok.append('O navegador não deixou abrir o WhatsApp automaticamente. ');
+      link.textContent = 'Toque aqui para abrir a conversa com a mensagem pronta';
+    }
+    ok.append(link, '.');
   });
   Object.entries(out).forEach(([k, el]) => el.classList.toggle('is-empty', !valor(k)));
 }
