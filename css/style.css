@@ -52,7 +52,7 @@ body {
   font-family: var(--sans); font-size: var(--fs-body); font-weight: 350; line-height: 1.55;
   -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; overflow-x: clip;
 }
-body.is-loading, body.menu-open { overflow: hidden; }
+html.is-loading, html.is-loading body, body.menu-open { overflow: hidden; }
 h1, h2, h3 { margin: 0; font-weight: 750; letter-spacing: -0.035em; line-height: 0.95; text-wrap: balance; }
 h2 em, h1 em, .em { font-style: normal; color: var(--brasa); }
 .diff em, .faq em { color: var(--telha); }
@@ -451,14 +451,36 @@ html:not(.js) .loader { display: none; }
 
 /* modo estático (movimento reduzido): a história vira uma abertura e três blocos de serviço */
 .story.is-static { height: auto; }
+html:not(.js) .story { height: auto; }
 .is-static .story__stage { position: relative; height: auto; overflow: visible; }
+html:not(.js) .story .story__stage { position: relative; height: auto; overflow: visible; }
 .is-static .story__canvas { display: none; }
+html:not(.js) .story .story__canvas { display: none; }
 .is-static .story__fallback { display: block; position: absolute; inset: 0 0 auto 0; height: 100svh; }
+html:not(.js) .story .story__fallback { display: block; position: absolute; inset: 0 0 auto 0; height: 100svh; }
 .is-static .story__fallback img[data-fb="hero"] { opacity: 1; }
+html:not(.js) .story .story__fallback img[data-fb="hero"] { opacity: 1; }
 .is-static .story__shade { height: 100svh; }
+html:not(.js) .story .story__shade { height: 100svh; }
 .is-static .hero { position: relative; min-height: 100svh; }
+html:not(.js) .story .hero { position: relative; min-height: 100svh; }
 .is-static .chapters { position: relative; display: grid; gap: 20px; padding: 64px var(--pad) 96px; pointer-events: auto; }
+html:not(.js) .story .chapters { position: relative; display: grid; gap: 20px; padding: 64px var(--pad) 96px; pointer-events: auto; }
 .is-static .chapter { position: relative; inset: auto; width: auto; margin: 0; opacity: 1; visibility: visible; transform: none; display: grid; gap: 6px; }
+html:not(.js) .story .chapter { position: relative; inset: auto; width: auto; margin: 0; opacity: 1; visibility: visible; transform: none; display: grid; gap: 6px; }
 .is-static .chapter__img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: max(8px, calc(var(--radius) - 24px)); margin-bottom: 18px; }
+html:not(.js) .story .chapter__img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: max(8px, calc(var(--radius) - 24px)); margin-bottom: 18px; }
 .is-static .chapters__rail { display: none; }
+html:not(.js) .story .chapters__rail { display: none; }
 @media (min-width: 64em) { .is-static .chapters { grid-template-columns: repeat(3, 1fr); } .is-static .chapter { padding: 28px; } .is-static .chapter__title { font-size: var(--fs-h3); } }
+@media (min-width: 64em) { html:not(.js) .story .chapters { grid-template-columns: repeat(3, 1fr); } html:not(.js) .story .chapter { padding: 28px; } html:not(.js) .story .chapter__title { font-size: var(--fs-h3); } }
+
+/* sem JavaScript (ou se ele falhar): tudo visível e navegável */
+.is-static .chapter__list, html:not(.js) .story .chapter__list { display: grid; }
+html:not(.js) .qa__a[hidden] { display: block; }
+html:not(.js) .qa__q i { display: none; }
+html:not(.js) .values__track { width: auto; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; }
+html:not(.js) .values__bar, html:not(.js) .burger { display: none; }
+html:not(.js) .form { display: none; }
+.quote__nojs { display: none; margin-bottom: 24px; color: var(--light-soft); }
+html:not(.js) .quote__nojs { display: block; }

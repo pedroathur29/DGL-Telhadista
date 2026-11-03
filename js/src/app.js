@@ -18,6 +18,10 @@ const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const root = document.documentElement;
+window.__dglReady = true;
+// se a página já caiu para a versão estática (o script demorou demais), volta ao modo animado
+if (window.__dglFailed) root.classList.add('js');
+const unlock = () => { root.classList.remove('is-loading'); document.body.classList.remove('is-loading'); };
 
 /* ---------- rolagem suave ---------- */
 let lenis = null;
@@ -125,7 +129,7 @@ const splitHero = () => {
 };
 
 function intro() {
-  document.body.classList.remove('is-loading');
+  unlock();
   const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
   tl.from(heroChars, { yPercent: 115, rotate: 6, duration: 1.4, stagger: 0.035 }, 0)
     .from('[data-hero-fade]', { y: 30, autoAlpha: 0, duration: 1.1, stagger: 0.1 }, 0.35)
@@ -135,7 +139,7 @@ function intro() {
 }
 
 function runLoader() {
-  if (reduce) { loader.remove(); document.body.classList.remove('is-loading'); if (roof) roof.state.build = 1; return; }
+  if (reduce || !loader) { if (loader) loader.remove(); unlock(); if (roof) roof.state.build = 1; if (!loader && !reduce) intro(); return; }
   splitHero();
   gsap.set('[data-hero-fade], .header', { autoAlpha: 1 });
   const tiles = $$('.loader__tiles img, .loader__tiles svg');
