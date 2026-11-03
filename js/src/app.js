@@ -265,24 +265,6 @@ if (!reduce) {
   $$('[data-parallax-strong]').forEach((img) => gsap.fromTo(img, { yPercent: -10, scale: 1.08 }, { yPercent: 10, scale: 1, ease: 'none', scrollTrigger: { trigger: img.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true } }));
 }
 
-/* ---------- valores em rolagem lateral (computador) ---------- */
-const mm = gsap.matchMedia();
-mm.add(forceMotion ? '(min-width: 56em)' : '(min-width: 56em) and (prefers-reduced-motion: no-preference)', () => {
-  const pin = $('[data-hscroll-pin]');
-  const track = $('[data-hscroll-track]');
-  const distance = () => track.scrollWidth - window.innerWidth;
-  const tween = gsap.to(track, {
-    x: () => -distance(), ease: 'none',
-    scrollTrigger: { trigger: pin, start: 'top top', end: () => '+=' + distance(), pin: true, scrub: 1, invalidateOnRefresh: true, anticipatePin: 1 }
-  });
-  const bar = $('[data-hscroll-bar]');
-  if (bar) gsap.to(bar, { scaleX: 1, ease: 'none', scrollTrigger: { trigger: pin, start: 'top top', end: () => '+=' + distance(), scrub: 1, invalidateOnRefresh: true } });
-  $$('.value', track).forEach((card) => {
-    gsap.fromTo($('img', card), { scale: 1.25 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: card, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } });
-    gsap.from($('.value__body', card), { y: 40, opacity: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: card, containerAnimation: tween, start: 'left 85%', once: true } });
-  });
-});
-mm.add(forceMotion ? '(max-width: 55.99em)' : '(max-width: 55.99em), (prefers-reduced-motion: reduce)', () => { $('[data-hscroll]').classList.add('no-hscroll'); return () => $('[data-hscroll]').classList.remove('no-hscroll'); });
 
 /* ---------- cartões que inclinam e botões magnéticos ---------- */
 if (fine && !reduce) {

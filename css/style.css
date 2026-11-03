@@ -322,26 +322,20 @@ html:not(.js) .loader { display: none; }
   .feature--b .feature__media { aspect-ratio: 4 / 5; }
 }
 
-/* ---------- 10. valores em rolagem lateral ---------- */
-.values { background: var(--noite); position: relative; z-index: 2; }
-.values__pin { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; gap: clamp(28px, 4vw, 48px); padding: clamp(90px, 10vw, 140px) 0 clamp(48px, 6vw, 80px); overflow: hidden; }
-.values__head { display: grid; gap: 14px; }
-.values__head h2 { font-size: var(--fs-h2); }
-.values__head p { color: var(--light-soft); max-width: 40ch; }
-.values__track { display: flex; gap: clamp(14px, 2vw, 28px); padding-inline: var(--pad); width: max-content; will-change: transform; }
-.value { position: relative; width: min(78vw, 560px); flex: none; border-radius: var(--radius); overflow: hidden; background: var(--noite-2); box-shadow: inset 0 0 0 1px var(--line-light); }
-.value figure { position: relative; aspect-ratio: 16 / 11; overflow: hidden; }
-.value img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); transition: transform 1.2s var(--ease); }
-.value__body { position: relative; padding: 24px 26px 28px; display: grid; gap: 8px; }
-.value__tag { font-size: var(--fs-small); font-weight: 600; letter-spacing: 0.01em; line-height: 1.2; color: var(--brasa); }
-.values__bar span { display: block; height: 2px; border-radius: 2px; background: var(--line-light); overflow: hidden; }
-.values__bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--telha), var(--ouro)); transform-origin: 0 50%; transform: scaleX(0); }
-.no-hscroll .values__bar { display: none; }
-.value h3 { font-size: var(--fs-h3); }
-.value p { color: var(--light-soft); }
-@media (hover: hover) { .value:hover img { transform: scale(1.02); } }
-.no-hscroll .values__track { width: auto; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; }
-.no-hscroll .value { scroll-snap-align: start; }
+/* ---------- 10. valores (compacto) ---------- */
+.values { position: relative; z-index: 2; background: var(--noite); padding: clamp(64px, 8vw, 120px) 0; }
+.values__title { font-size: var(--fs-h3); margin-bottom: clamp(24px, 3vw, 40px); }
+.values__list { display: grid; gap: 0; }
+.value { display: grid; grid-template-columns: 9rem 1fr; gap: 4px 20px; align-items: baseline; padding: 18px 0; border-top: 1px solid var(--line-light); }
+.value h3 { font-size: clamp(1.25rem, 1rem + 0.8vw, 1.6rem); letter-spacing: -0.02em; }
+.value p { grid-column: 2; color: var(--light-soft); }
+.value__tag { grid-row: span 2; font-size: var(--fs-small); font-weight: 600; color: var(--brasa); }
+@media (min-width: 56em) {
+  .values__list { grid-template-columns: repeat(5, 1fr); gap: 24px; }
+  .value { grid-template-columns: 1fr; padding: 20px 0 0; }
+  .value p { grid-column: auto; }
+  .value__tag { grid-row: auto; }
+}
 
 /* ---------- 11. para quem ---------- */
 .audience { background: var(--grafite); color: var(--areia); padding: clamp(90px, 12vw, 190px) 0; position: relative; z-index: 2; }
@@ -532,8 +526,7 @@ html:not(.js) .story .chapters__rail { display: none; }
 .is-static .chapter__list, html:not(.js) .story .chapter__list { display: grid; }
 html:not(.js) .qa__a[hidden] { display: block; }
 html:not(.js) .qa__q i { display: none; }
-html:not(.js) .values__track { width: auto; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; }
-html:not(.js) .values__bar, html:not(.js) .burger { display: none; }
+html:not(.js) .burger { display: none; }
 html:not(.js) .form { display: none; }
 .quote__nojs { display: none; margin-bottom: 24px; color: var(--light-soft); }
 html:not(.js) .quote__nojs { display: block; }

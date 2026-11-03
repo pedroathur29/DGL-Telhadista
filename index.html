@@ -40,7 +40,7 @@
   <meta name="theme-color" content="#0f1a2c">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="assets/img/casa-1600.webp" imagesrcset="assets/img/casa-800.webp 800w, assets/img/casa-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
-  <link rel="stylesheet" href="css/style.css?v=202611032016">
+  <link rel="stylesheet" href="css/style.css?v=202611032020">
   <script>
     /* Só com JavaScript a página entra no modo animado e trava a rolagem durante a abertura.
        Se o js/app.js não carregar ou não rodar em 8 s, a página volta para a versão estática e navegável. */
@@ -212,7 +212,6 @@
           <li>Construção</li><li>Manutenção</li><li>Reformas</li><li>Pergolados</li><li>Construção civil</li>
           <li>Construção</li><li>Manutenção</li><li>Reformas</li><li>Pergolados</li><li>Construção civil</li>
         </ul>
-        <div class="values__bar wrap" aria-hidden="true"><span><i data-hscroll-bar></i></span></div>
       </div>
     </section>
 
@@ -284,19 +283,16 @@
       </div>
     </section>
 
-    <!-- ===== Valores em rolagem lateral ===== -->
-    <section class="values" aria-labelledby="valores-titulo" data-hscroll>
-      <div class="values__pin" data-hscroll-pin>
-        <div class="values__head wrap">
-          <h2 id="valores-titulo" data-reveal>Cinco valores em <em>cada obra</em></h2>
-          <p data-reveal>Confiança, qualidade, pontualidade, capricho e segurança.</p>
-        </div>
-        <ul class="values__track" data-hscroll-track>
-          <li class="value"><figure><img decoding="async" src="assets/img/casa-1600.webp" srcset="assets/img/casa-800.webp 800w, assets/img/casa-1600.webp 1600w" sizes="(min-width: 56em) 560px, 78vw" width="1600" height="1000" alt="Ilustração de uma casa com telhado de telhas coloniais ao entardecer" loading="lazy"></figure><div class="value__body"><span class="value__tag">palavra dada</span><h3>Confiança</h3><p>Você fala direto com quem cuida da sua obra.</p></div></li>
-          <li class="value"><figure><img decoding="async" src="assets/img/telhas-1600.webp" srcset="assets/img/telhas-800.webp 800w, assets/img/telhas-1600.webp 1600w" sizes="(min-width: 56em) 560px, 78vw" width="1600" height="1000" alt="Ilustração de fileiras de telhas coloniais vistas de perto" loading="lazy"></figure><div class="value__body"><span class="value__tag">feito para durar</span><h3>Qualidade</h3><p>Material bem assentado, para o telhado durar.</p></div></li>
-          <li class="value"><figure><img decoding="async" src="assets/img/estrutura-1600.webp" srcset="assets/img/estrutura-800.webp 800w, assets/img/estrutura-1600.webp 1600w" sizes="(min-width: 56em) 560px, 78vw" width="1600" height="1000" alt="Ilustração de um telhado em construção" loading="lazy"></figure><div class="value__body"><span class="value__tag">no dia certo</span><h3>Pontualidade</h3><p>Começa e termina na data combinada.</p></div></li>
-          <li class="value"><figure><img decoding="async" src="assets/img/cumeeira-1600.webp" srcset="assets/img/cumeeira-800.webp 800w, assets/img/cumeeira-1600.webp 1600w" sizes="(min-width: 56em) 560px, 78vw" width="1600" height="1000" alt="Ilustração da cumeeira de um telhado" loading="lazy"></figure><div class="value__body"><span class="value__tag">do beiral à cumeeira</span><h3>Capricho</h3><p>Acabamento conferido do beiral à cumeeira.</p></div></li>
-          <li class="value"><figure><img decoding="async" src="assets/img/manutencao-1600.webp" srcset="assets/img/manutencao-800.webp 800w, assets/img/manutencao-1600.webp 1600w" sizes="(min-width: 56em) 560px, 78vw" width="1600" height="1000" alt="Ilustração de telhas sendo trocadas em um telhado" loading="lazy"></figure><div class="value__body"><span class="value__tag">em cada etapa</span><h3>Segurança</h3><p>Equipe protegida e obra organizada.</p></div></li>
+    <!-- ===== Valores: versão compacta (o plano pedia menos repetição com os diferenciais) ===== -->
+    <section class="values" aria-labelledby="valores-titulo">
+      <div class="wrap">
+        <h2 id="valores-titulo" class="values__title" data-reveal>Cinco valores em <em>cada obra</em></h2>
+        <ul class="values__list" data-reveal>
+          <li class="value"><span class="value__tag">palavra dada</span><h3>Confiança</h3><p>Você fala direto com quem cuida da sua obra.</p></li>
+          <li class="value"><span class="value__tag">feito para durar</span><h3>Qualidade</h3><p>Material bem assentado, para o telhado durar.</p></li>
+          <li class="value"><span class="value__tag">no dia certo</span><h3>Pontualidade</h3><p>Começa e termina na data combinada.</p></li>
+          <li class="value"><span class="value__tag">do beiral à cumeeira</span><h3>Capricho</h3><p>Acabamento conferido do beiral à cumeeira.</p></li>
+          <li class="value"><span class="value__tag">em cada etapa</span><h3>Segurança</h3><p>Equipe protegida e obra organizada.</p></li>
         </ul>
       </div>
     </section>
@@ -497,6 +493,6 @@
   <a class="wa-float" href="https://wa.me/5519993101979?text=Ol%C3%A1%2C%20DGL!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener" aria-label="Conversar com a DGL pelo WhatsApp" data-float><svg aria-hidden="true"><use href="#i-wa"/></svg></a>
 
   <button class="motion-toggle" type="button" data-motion-toggle hidden></button>
-  <script src="js/app.js?v=202611032016" defer onerror="window.__dglFail && window.__dglFail()"></script>
+  <script src="js/app.js?v=202611032020" defer onerror="window.__dglFail && window.__dglFail()"></script>
 </body>
 </html>
