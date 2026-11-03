@@ -28,7 +28,7 @@ Site de uma página, feito do zero (sem Bootstrap). Basta abrir o `index.html`: 
   - `vendor/ez-tree/`: gerador de árvores ez-tree (MIT, Daniel Greenheck), reduzido às texturas de carvalho
     (casca: Poly Haven, CC0) e folhas de carvalho e freixo
 - `assets/logo.svg`: logo da DGL em vetor (azul #0147af e vermelho #fa1b1b), usada no cabeçalho, no carregamento, no rodapé e no ícone da aba (`assets/favicon.svg`)
-- `assets/img/obra-*.webp`: fotos reais de obras enviadas pela DGL (sem metadados de localização), usadas em Trabalhos, Diferenciais e Para quem
+- `assets/img/obra-*.webp`: 25 fotos reais de obras enviadas pela DGL (sem metadados e com números de casa borrados), usadas em Trabalhos, Também fazemos, Diferenciais e Para quem
 - `assets/img/` (demais): ilustrações 3D renderizadas a partir da mesma cena, usadas na história e nos valores
 - Todas as imagens estão em WebP com duas larguras; o navegador escolhe a menor que serve para a tela
 - `assets/fonts/`: Archivo (licença OFL), a única fonte do site

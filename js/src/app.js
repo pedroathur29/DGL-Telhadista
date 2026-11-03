@@ -485,3 +485,31 @@ if (systemReduce) {
     });
   }
 }
+
+/* ---------- galeria de trabalhos: filtro por tipo e "ver mais" ---------- */
+{
+  const grid = $('[data-works]');
+  const bar = $('[data-works-filters]');
+  const more = $('[data-works-more]');
+  if (grid && bar && more) {
+    const items = $$('.work', grid);
+    let filtro = 'todos', aberto = false;
+    const aplicar = () => {
+      items.forEach((li) => {
+        const tipo = filtro === 'todos' || li.dataset.cat === filtro;
+        const extra = filtro === 'todos' && !aberto && li.classList.contains('is-extra');
+        li.classList.toggle('is-hidden', !tipo || extra);
+      });
+      more.hidden = !(filtro === 'todos' && !aberto);
+      ScrollTrigger.refresh();
+    };
+    bar.hidden = false;
+    $$('[data-filter]', bar).forEach((b) => b.addEventListener('click', () => {
+      filtro = b.dataset.filter;
+      $$('[data-filter]', bar).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      aplicar();
+    }));
+    more.addEventListener('click', () => { aberto = true; aplicar(); const prox = items.find((li) => li.classList.contains('is-extra')); if (prox) prox.querySelector('img').focus?.(); });
+    aplicar();
+  }
+}
