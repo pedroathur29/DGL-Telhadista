@@ -90,7 +90,6 @@ body::after {
 .loader__tiles { display: flex; gap: 6px; font-size: 34px; color: var(--telha); }
 .loader__tiles img, .loader__tiles svg { transform: translateY(30px) scale(0.94); opacity: 0; }
 .loader__logo { width: min(320px, 70vw); height: auto; display: block; }
-.loader__text { font-size: var(--fs-small); color: var(--ink-soft); letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
 html:not(.js) .loader { display: none; }
 
 /* ---------- 4. cursor e progresso ---------- */

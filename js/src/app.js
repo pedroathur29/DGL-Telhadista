@@ -118,7 +118,6 @@ function initRoof(scene) {
 
 /* ---------- carregamento e entrada da abertura ---------- */
 const loader = $('[data-loader]');
-const count = $('[data-loader-count]');
 const heroLines = $$('.hero__line');
 let heroChars = [];
 const splitHero = () => {
@@ -145,12 +144,11 @@ function runLoader() {
   splitHero();
   gsap.set('[data-hero-fade], .header', { autoAlpha: 1 });
   const tiles = $$('.loader__tiles img, .loader__tiles svg');
-  const n = { v: 0 };
+  // abertura curta: a logo entra e a cortina sobe; sem porcentagem fictícia (o 3D carrega por trás, no seu tempo)
   const tl = gsap.timeline();
-  tl.to(tiles, { y: 0, rotate: 0, opacity: 1, duration: 0.6, stagger: 0.14, ease: 'back.out(2)' }, 0)
-    .to(n, { v: 100, duration: 1.3, ease: 'power2.inOut', onUpdate: () => { count.textContent = Math.round(n.v); } }, 0)
-    .to(loader, { yPercent: -100, duration: 1, ease: 'expo.inOut' }, '+=0.15')
-    .add(intro, '-=0.55')
+  tl.to(tiles, { y: 0, scale: 1, opacity: 1, duration: 0.45, ease: 'power3.out' }, 0)
+    .to(loader, { yPercent: -100, duration: 0.7, ease: 'expo.inOut' }, 0.55)
+    .add(intro, 0.8)
     .add(() => loader.remove());
 }
 const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]) : Promise.resolve();
