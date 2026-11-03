@@ -415,7 +415,8 @@ html:not(.js) .loader { display: none; }
 .footer__label { font-size: var(--fs-small); color: rgba(255, 255, 255, 0.82); }
 .footer__phone { font-size: clamp(1.9rem, 0.9rem + 3.4vw, 4.4rem); padding-bottom: 0.08em; font-weight: 800; letter-spacing: -0.055em; line-height: 0.9; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .footer__phone .char { transition: transform 0.6s var(--ease), color 0.3s; }
-@media (hover: hover) { .footer__big:hover .footer__phone .char { color: var(--brasa); } }
+@media (hover: hover) { .footer__phone:hover .char { color: var(--brasa); } }
+.footer__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 .footer__cols { margin-top: clamp(48px, 6vw, 90px); display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px 24px; }
 .footer__cols > div { display: grid; gap: 8px; align-content: start; justify-items: start; }
 .footer__cols > div:first-child { grid-column: 1 / -1; }

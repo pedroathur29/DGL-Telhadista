@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#0f1a2c">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="assets/img/casa-1600.webp" imagesrcset="assets/img/casa-800.webp 800w, assets/img/casa-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
-  <link rel="stylesheet" href="css/style.css?v=202611031638">
+  <link rel="stylesheet" href="css/style.css?v=202611031704">
   <script>
     /* Só com JavaScript a página entra no modo animado e trava a rolagem durante a abertura.
        Se o js/app.js não carregar ou não rodar em 8 s, a página volta para a versão estática e navegável. */
@@ -337,10 +337,14 @@
           <p class="footer__logo"><img src="assets/logo.svg" width="1128" height="360" alt="Logo da DGL Telhadista"></p>
           <p class="footer__name" translate="no">DGL Telhadista<small>Serviços gerais em telhados</small></p>
         </div>
-        <a class="footer__big" href="https://wa.me/5519993101979" target="_blank" rel="noopener">
+        <div class="footer__big">
           <span class="footer__label">Ligue ou chame no WhatsApp</span>
-          <span class="footer__phone" data-wave>(19) 99310-1979</span>
-        </a>
+          <a class="footer__phone" href="tel:+5519993101979" aria-label="Ligar para (19) 99310-1979" data-wave>(19) 99310-1979</a>
+          <div class="footer__actions">
+            <a class="btn btn--small btn--light" href="tel:+5519993101979"><span class="btn__text">Ligar</span></a>
+            <a class="btn btn--small btn--wa" href="https://wa.me/5519993101979?text=Ol%C3%A1%2C%20DGL!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener"><svg class="btn__icon" aria-hidden="true"><use href="#i-wa"/></svg><span class="btn__text">Chamar no WhatsApp</span></a>
+          </div>
+        </div>
       </div>
       <div class="footer__cols">
         <div>
@@ -373,6 +377,6 @@
   <a class="wa-float" href="https://wa.me/5519993101979?text=Ol%C3%A1%2C%20DGL!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener" aria-label="Conversar com a DGL pelo WhatsApp" data-float><svg aria-hidden="true"><use href="#i-wa"/></svg></a>
 
   <button class="motion-toggle" type="button" data-motion-toggle hidden></button>
-  <script src="js/app.js?v=202611031638" defer onerror="window.__dglFail && window.__dglFail()"></script>
+  <script src="js/app.js?v=202611031704" defer onerror="window.__dglFail && window.__dglFail()"></script>
 </body>
 </html>
