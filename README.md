@@ -39,10 +39,8 @@ npm install
 npm run build
 ```
 
-## Publicar na Vercel
-Importe o repositório em vercel.com/new, deixe "Framework Preset" em **Other** e clique em **Deploy**. O `vercel.json` já configura o cache das imagens.
-
-Bibliotecas: Three.js (MIT), GSAP (licença padrão gratuita da GreenSock), Lenis (MIT), ez-tree (MIT).
+## Publicação
+O site é publicado pelo GitHub Pages (branch `main`, pasta raiz). Não precisa de servidor nem de build na hospedagem: os arquivos gerados (`js/app.js` e `js/scene.js`) já vão no repositório.
 
 ## Pendências do cliente
 - Link do Instagram (rodapé e perguntas)
