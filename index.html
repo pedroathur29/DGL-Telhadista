@@ -22,7 +22,7 @@
   {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "DGL Telhadista e Serviços em Gerais",
+    "name": "DGL Telhadista e Serviços Gerais",
     "alternateName": "DGL Telhadista",
     "url": "https://pedroathur29.github.io/DGL-Telhadista/",
     "logo": "https://pedroathur29.github.io/DGL-Telhadista/assets/logo.svg",
@@ -30,13 +30,15 @@
     "description": "Serviços gerais em telhados na construção civil: construção, manutenção e reforma de telhados e coberturas.",
     "email": "DGLtelhadista@gmail.com",
     "telephone": "+55-19-99310-1979",
+    "taxID": "32.770.448/0001-91",
+    "sameAs": ["https://www.facebook.com/share/1CpcmAbKnx/"],
     "contactPoint": { "@type": "ContactPoint", "telephone": "+55-19-99310-1979", "contactType": "customer service", "availableLanguage": "pt-BR" }
   }
   </script>
   <meta name="theme-color" content="#0f1a2c">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="assets/img/casa-1600.webp" imagesrcset="assets/img/casa-800.webp 800w, assets/img/casa-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
-  <link rel="stylesheet" href="css/style.css?v=202611031731">
+  <link rel="stylesheet" href="css/style.css?v=202611031818">
   <script>
     /* Só com JavaScript a página entra no modo animado e trava a rolagem durante a abertura.
        Se o js/app.js não carregar ou não rodar em 8 s, a página volta para a versão estática e navegável. */
@@ -78,6 +80,7 @@
     <nav class="nav" aria-label="Principal">
       <ul class="nav__list">
         <li><a class="navlink ulink" href="#servicos">Serviços</a></li>
+        <li><a class="navlink ulink" href="#trabalhos">Trabalhos</a></li>
         <li><a class="navlink ulink" href="#diferenciais">Diferenciais</a></li>
         <li><a class="navlink ulink" href="#para-quem">Para quem</a></li>
         <li><a class="navlink ulink" href="#perguntas">Perguntas</a></li>
@@ -91,6 +94,7 @@
     <nav class="menu__inner" aria-label="Menu">
       <ul class="menu__list">
         <li><a href="#servicos" data-menu-link><span>Serviços</span></a></li>
+        <li><a href="#trabalhos" data-menu-link><span>Trabalhos</span></a></li>
         <li><a href="#diferenciais" data-menu-link><span>Diferenciais</span></a></li>
         <li><a href="#para-quem" data-menu-link><span>Para quem</span></a></li>
         <li><a href="#perguntas" data-menu-link><span>Perguntas</span></a></li>
@@ -195,20 +199,41 @@
       </div>
     </section>
 
+    <!-- ===== Trabalhos: fotos reais de obras enviadas pela DGL ===== -->
+    <section class="works" id="trabalhos" aria-labelledby="trabalhos-titulo">
+      <div class="wrap">
+        <div class="works__head">
+          <h2 id="trabalhos-titulo" data-split-lines>Trabalhos <em>da DGL</em></h2>
+          <p data-reveal>Fotos de obras feitas pela DGL Telhadista: construção, manutenção e reforma de telhados e coberturas.</p>
+        </div>
+        <ul class="works__grid">
+          <li class="work work--wide"><figure class="work__media" data-reveal-img><img decoding="async" src="assets/img/obra-07-1600.webp" srcset="assets/img/obra-07-800.webp 800w, assets/img/obra-07-1600.webp 1600w" sizes="(min-width: 56em) 66vw, 100vw" width="1600" height="1200" alt="Fachada de casa nova com telhado de telhas cinza concluído" loading="lazy"></figure><p class="work__cap">Casa nova com telhado concluído</p></li>
+          <li class="work work--tall"><figure class="work__media" data-reveal-img><img decoding="async" src="assets/img/obra-05-1200.webp" srcset="assets/img/obra-05-600.webp 600w, assets/img/obra-05-1200.webp 1200w" sizes="(min-width: 56em) 33vw, 50vw" width="1200" height="1600" alt="Varanda comprida com madeiramento aparente sob as telhas" loading="lazy"></figure><p class="work__cap">Varanda com madeiramento aparente</p></li>
+          <li class="work"><figure class="work__media" data-reveal-img><img decoding="async" src="assets/img/obra-01-1600.webp" srcset="assets/img/obra-01-800.webp 800w, assets/img/obra-01-1600.webp 1600w" sizes="(min-width: 56em) 33vw, 50vw" width="1600" height="1200" alt="Telhado de telhas cerâmicas visto de cima" loading="lazy"></figure><p class="work__cap">Telhado cerâmico</p></li>
+          <li class="work"><figure class="work__media" data-reveal-img><img decoding="async" src="assets/img/obra-04-1600.webp" srcset="assets/img/obra-04-800.webp 800w, assets/img/obra-04-1600.webp 1600w" sizes="(min-width: 56em) 33vw, 50vw" width="1600" height="1200" alt="Casa em construção com o telhado sendo montado" loading="lazy"></figure><p class="work__cap">Telhado em execução</p></li>
+          <li class="work"><figure class="work__media" data-reveal-img><img decoding="async" src="assets/img/obra-09-1152.webp" srcset="assets/img/obra-09-800.webp 800w, assets/img/obra-09-1152.webp 1152w" sizes="(min-width: 56em) 33vw, 50vw" width="1152" height="864" alt="Telhado de telhas cinza em execução, com telhas translúcidas para entrada de luz" loading="lazy"></figure><p class="work__cap">Telhado com telhas translúcidas</p></li>
+          <li class="work work--wide"><figure class="work__media" data-reveal-img><img decoding="async" src="assets/img/obra-02-1599.webp" srcset="assets/img/obra-02-800.webp 800w, assets/img/obra-02-1599.webp 1599w" sizes="(min-width: 56em) 66vw, 100vw" width="1599" height="899" alt="Beiral com madeiramento aparente envernizado e telhas cerâmicas" loading="lazy"></figure><p class="work__cap">Madeiramento aparente e beiral</p></li>
+          <li class="work"><figure class="work__media" data-reveal-img><img decoding="async" src="assets/img/obra-03-1600.webp" srcset="assets/img/obra-03-800.webp 800w, assets/img/obra-03-1600.webp 1600w" sizes="(min-width: 56em) 33vw, 50vw" width="1600" height="1200" alt="Área de lazer com piscina e cobertura de telhas cerâmicas" loading="lazy"></figure><p class="work__cap">Cobertura da área de lazer</p></li>
+          <li class="work"><figure class="work__media" data-reveal-img><img decoding="async" src="assets/img/obra-06-1600.webp" srcset="assets/img/obra-06-800.webp 800w, assets/img/obra-06-1600.webp 1600w" sizes="(min-width: 56em) 33vw, 50vw" width="1600" height="1200" alt="Cobertura com telhas onduladas cinza vista de cima" loading="lazy"></figure><p class="work__cap">Cobertura com telhas onduladas</p></li>
+          <li class="work"><figure class="work__media" data-reveal-img><img decoding="async" src="assets/img/obra-08-1600.webp" srcset="assets/img/obra-08-800.webp 800w, assets/img/obra-08-1600.webp 1600w" sizes="(min-width: 56em) 33vw, 50vw" width="1600" height="1200" alt="Casa nova com telhado cinza vista da rua" loading="lazy"></figure><p class="work__cap">A mesma obra, vista da rua</p></li>
+        </ul>
+      </div>
+    </section>
+
     <!-- ===== Diferenciais ===== -->
     <section class="diff" id="diferenciais" aria-labelledby="diff-titulo">
       <div class="wrap">
         <h2 class="diff__statement" id="diff-titulo" data-words>O que é combinado, é entregue: no prazo e com telhado bem acabado.</h2>
         <div class="diff__grid">
           <article class="feature feature--a" data-tilt>
-            <figure class="feature__media" data-reveal-img><img decoding="async" src="assets/img/estrutura-1600.webp" srcset="assets/img/estrutura-800.webp 800w, assets/img/estrutura-1600.webp 1600w" sizes="(min-width: 56em) 58vw, 100vw" width="1600" height="1000" alt="Ilustração de um telhado em construção, com o madeiramento à mostra e as telhas sendo assentadas" loading="lazy" data-parallax></figure>
+            <figure class="feature__media" data-reveal-img><img decoding="async" src="assets/img/obra-09-1152.webp" srcset="assets/img/obra-09-800.webp 800w, assets/img/obra-09-1152.webp 1152w" sizes="(min-width: 56em) 58vw, 100vw" width="1152" height="864" alt="Telhado de telhas cinza em execução, com telhas translúcidas para entrada de luz" loading="lazy" data-parallax></figure>
             <div class="feature__body">
               <h3 class="feature__title">Entrega dentro do prazo</h3>
               <p>Você sabe quando a obra começa e quando termina.</p>
             </div>
           </article>
           <article class="feature feature--b" data-tilt>
-            <figure class="feature__media" data-reveal-img><img decoding="async" src="assets/img/cumeeira-1600.webp" srcset="assets/img/cumeeira-800.webp 800w, assets/img/cumeeira-1600.webp 1600w" sizes="(min-width: 56em) 58vw, 100vw" width="1600" height="1000" alt="Ilustração da cumeeira e das fileiras de telhas de um telhado pronto" loading="lazy" data-parallax></figure>
+            <figure class="feature__media" data-reveal-img><img decoding="async" src="assets/img/obra-05-1200.webp" srcset="assets/img/obra-05-600.webp 600w, assets/img/obra-05-1200.webp 1200w" sizes="(min-width: 56em) 33vw, 100vw" width="1200" height="1600" alt="Varanda comprida com madeiramento aparente sob as telhas" loading="lazy" data-parallax></figure>
             <div class="feature__body">
               <h3 class="feature__title">Telhados bem acabados</h3>
               <p>Cumeeira alinhada, beiral reto e nenhuma telha fora do lugar.</p>
@@ -245,19 +270,19 @@
         <ul class="audience__cards">
           <li class="card" data-tilt>
             <a href="#orcamento" class="card__link" data-pick="Residência">
-              <figure class="card__media" data-reveal-img><img decoding="async" src="assets/img/casa-retrato-1000.webp" srcset="assets/img/casa-retrato-600.webp 600w, assets/img/casa-retrato-1000.webp 1000w" sizes="(min-width: 56em) 33vw, 100vw" width="1000" height="1250" alt="Ilustração de uma casa com telhado de duas águas" loading="lazy"></figure>
+              <figure class="card__media" data-reveal-img><img decoding="async" src="assets/img/obra-07-1600.webp" srcset="assets/img/obra-07-800.webp 800w, assets/img/obra-07-1600.webp 1600w" sizes="(min-width: 56em) 33vw, 100vw" width="1600" height="1200" alt="Fachada de casa nova com telhado de telhas cinza concluído" loading="lazy"></figure>
               <div class="card__body"><h3>Proprietários de residências</h3><p class="card__text">Sua casa protegida, sem dor de cabeça.</p><span class="card__go">Pedir orçamento <svg aria-hidden="true"><use href="#i-arrow"/></svg></span></div>
             </a>
           </li>
           <li class="card" data-tilt>
             <a href="#orcamento" class="card__link" data-pick="Profissional autônomo">
-              <figure class="card__media" data-reveal-img><img decoding="async" src="assets/img/estrutura-retrato-1000.webp" srcset="assets/img/estrutura-retrato-600.webp 600w, assets/img/estrutura-retrato-1000.webp 1000w" sizes="(min-width: 56em) 33vw, 100vw" width="1000" height="1250" alt="Ilustração de uma obra com o telhado sendo montado" loading="lazy"></figure>
+              <figure class="card__media" data-reveal-img><img decoding="async" src="assets/img/obra-04-1600.webp" srcset="assets/img/obra-04-800.webp 800w, assets/img/obra-04-1600.webp 1600w" sizes="(min-width: 56em) 33vw, 100vw" width="1600" height="1200" alt="Casa em construção com o telhado sendo montado" loading="lazy"></figure>
               <div class="card__body"><h3>Profissionais autônomos</h3><p class="card__text">Um parceiro de telhado para as suas obras.</p><span class="card__go">Pedir orçamento <svg aria-hidden="true"><use href="#i-arrow"/></svg></span></div>
             </a>
           </li>
           <li class="card" data-tilt>
             <a href="#orcamento" class="card__link" data-pick="Empresa">
-              <figure class="card__media" data-reveal-img><img decoding="async" src="assets/img/galpao-retrato-1000.webp" srcset="assets/img/galpao-retrato-600.webp 600w, assets/img/galpao-retrato-1000.webp 1000w" sizes="(min-width: 56em) 33vw, 100vw" width="1000" height="1250" alt="Ilustração de um galpão com cobertura de telhas" loading="lazy"></figure>
+              <figure class="card__media" data-reveal-img><img decoding="async" src="assets/img/obra-06-1600.webp" srcset="assets/img/obra-06-800.webp 800w, assets/img/obra-06-1600.webp 1600w" sizes="(min-width: 56em) 33vw, 100vw" width="1600" height="1200" alt="Cobertura com telhas onduladas cinza vista de cima" loading="lazy"></figure>
               <div class="card__body"><h3>Empresas da construção civil</h3><p class="card__text">Equipe para coberturas de obras e imóveis comerciais.</p><span class="card__go">Pedir orçamento <svg aria-hidden="true"><use href="#i-arrow"/></svg></span></div>
             </a>
           </li>
@@ -303,7 +328,7 @@
           </div>
           <div class="qa" data-reveal>
             <h3><button class="qa__q" type="button" aria-expanded="false" aria-controls="qa-8" id="qa-8-b">A DGL está nas redes sociais?<i aria-hidden="true"></i></button></h3>
-            <div class="qa__a" id="qa-8" role="region" aria-labelledby="qa-8-b" hidden><p>Sim. A DGL Telhadista está no Instagram, no Facebook e no WhatsApp, onde você pode acompanhar o trabalho e falar com a empresa.</p></div>
+            <div class="qa__a" id="qa-8" role="region" aria-labelledby="qa-8-b" hidden><p>Sim. A DGL Telhadista está no <a class="ulink" href="https://www.facebook.com/share/1CpcmAbKnx/" target="_blank" rel="noopener">Facebook</a>, onde você acompanha os trabalhos, e atende pelo <a class="ulink" href="https://wa.me/5519993101979" target="_blank" rel="noopener">WhatsApp</a>.</p></div>
           </div>
         </div>
       </div>
@@ -382,20 +407,20 @@
         <div>
           <h2 class="footer__h">Redes</h2>
           <a class="ulink" href="https://wa.me/5519993101979" target="_blank" rel="noopener">WhatsApp</a>
-          <!-- Inserir os links reais do Instagram e do Facebook -->
-          <span>Instagram</span>
-          <span>Facebook</span>
+          <a class="ulink" href="https://www.facebook.com/share/1CpcmAbKnx/" target="_blank" rel="noopener">Facebook</a>
+          <!-- Instagram: incluir aqui quando a DGL enviar o link do perfil -->
         </div>
         <div>
           <h2 class="footer__h">Navegue</h2>
           <a class="ulink" href="#servicos">Serviços</a>
+          <a class="ulink" href="#trabalhos">Trabalhos</a>
           <a class="ulink" href="#diferenciais">Diferenciais</a>
           <a class="ulink" href="#para-quem">Para quem</a>
           <a class="ulink" href="#orcamento">Orçamento</a>
         </div>
       </div>
       <div class="footer__last">
-        <p><span translate="no">DGL Telhadista e Serviços em Gerais</span> · © 2026 · Ilustrações 3D criadas para o site (fictícias)</p>
+        <p><span translate="no">DGL Telhadista e Serviços Gerais</span> · CNPJ 32.770.448/0001-91 · © 2026 · Fotos de obras da DGL; ilustrações 3D criadas para o site</p>
         <a class="totop" href="#topo" data-magnetic>Voltar ao topo <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
     </div>
@@ -404,6 +429,6 @@
   <a class="wa-float" href="https://wa.me/5519993101979?text=Ol%C3%A1%2C%20DGL!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener" aria-label="Conversar com a DGL pelo WhatsApp" data-float><svg aria-hidden="true"><use href="#i-wa"/></svg></a>
 
   <button class="motion-toggle" type="button" data-motion-toggle hidden></button>
-  <script src="js/app.js?v=202611031731" defer onerror="window.__dglFail && window.__dglFail()"></script>
+  <script src="js/app.js?v=202611031818" defer onerror="window.__dglFail && window.__dglFail()"></script>
 </body>
 </html>
