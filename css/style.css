@@ -409,6 +409,11 @@ html:not(.js) .loader { display: none; }
   background: var(--noite-2); box-shadow: inset 0 0 0 1px var(--line-light); color: var(--areia); font-size: var(--fs-body);
   transition: box-shadow 0.3s, background-color 0.3s;
 }
+.field textarea { width: 100%; min-height: 110px; padding: 28px 20px 12px; border-radius: 16px; border: 0; resize: vertical; background: var(--noite-2); box-shadow: inset 0 0 0 1px var(--line-light); color: var(--areia); font: inherit; font-size: var(--fs-body); line-height: 1.45; transition: box-shadow 0.3s, background-color 0.3s; }
+.field textarea:focus { outline: none; box-shadow: inset 0 0 0 2px var(--brasa); background: var(--noite-3); }
+.field textarea:focus + label, .field textarea:not(:placeholder-shown) + label { transform: translateY(-12px) scale(0.74); color: var(--ouro); }
+.field__hint { margin-top: 6px; font-size: var(--fs-small); color: var(--light-soft); }
+.form__privacy { font-size: var(--fs-small); color: var(--light-soft); max-width: 60ch; }
 .field label { position: absolute; left: 20px; top: 21px; color: var(--light-soft); pointer-events: none; transform-origin: 0 0; transition: transform 0.4s var(--ease), color 0.3s; }
 .field input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--brasa); background: var(--noite-3); }
 .field input:focus + label, .field input:not(:placeholder-shown) + label { transform: translateY(-12px) scale(0.74); color: var(--ouro); }

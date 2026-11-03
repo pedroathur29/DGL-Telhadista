@@ -386,11 +386,14 @@ qas.forEach((qa) => $('.qa__q', qa).addEventListener('click', () => {
 /* ---------- orçamento: prévia da conversa e validação na hora ---------- */
 const form = $('#form');
 if (form) {
-  const nome = $('#f-nome'), tel = $('#f-tel');
+  const nome = $('#f-nome'), tel = $('#f-tel'), cidade = $('#f-cidade'), msg = $('#f-msg');
   const out = Object.fromEntries($$('[data-out]').map((b) => [b.dataset.out, b]));
   const preview = $('[data-preview]'), typing = $('[data-typing]'), ok = $('[data-ok]');
-  const padrao = { nome: '…', telefone: '…', servico: 'um serviço', perfil: 'a minha residência' };
-  const valor = (n) => (n === 'nome' ? nome.value.trim() : n === 'telefone' ? tel.value.trim() : (form.querySelector(`input[name="${n}"]:checked`) || {}).value || '');
+  const padrao = { nome: '…', telefone: '…', servico: 'um serviço', perfil: 'a minha residência', cidade: '…' };
+  const campos = { nome, telefone: tel, cidade };
+  const valor = (n) => (campos[n] ? campos[n].value.trim() : (form.querySelector(`input[name="${n}"]:checked`) || {}).value || '');
+  // telefone do Brasil: DDD + 8 ou 9 dígitos (celular começa com 9); aceita +55 na frente
+  const telValido = () => { let d = tel.value.replace(/\D/g, ''); if (d.length > 11 && d.startsWith('55')) d = d.slice(2); if (d.startsWith('0')) d = d.slice(1); return (d.length === 10 && /^[1-9]{2}[2-5]/.test(d)) || (d.length === 11 && /^[1-9]{2}9/.test(d)); };
   let typingTimer;
   const atualizar = () => {
     Object.entries(out).forEach(([k, el]) => { const v = valor(k); el.textContent = v || padrao[k]; el.classList.toggle('is-empty', !v); });
@@ -400,8 +403,9 @@ if (form) {
   };
   const regras = {
     nome: [nome, () => nome.value.trim().length > 1, 'Escreva o seu nome para a DGL saber com quem fala.'],
-    telefone: [tel, () => tel.value.replace(/\D/g, '').length >= 10, 'Escreva um telefone com DDD, por exemplo (19) 99999-9999.'],
-    servico: [null, () => !!valor('servico'), 'Escolha construção, manutenção ou reformas.']
+    telefone: [tel, telValido, 'Escreva um telefone com DDD, por exemplo (19) 99999-9999.'],
+    cidade: [cidade, () => cidade.value.trim().length > 1, 'Escreva a cidade da obra, por exemplo Santa Bárbara d\'Oeste.'],
+    servico: [null, () => !!valor('servico'), 'Escolha o tipo de serviço.']
   };
   const marcar = (k, mostrar) => {
     const [input, teste, msg] = regras[k];
@@ -416,9 +420,9 @@ if (form) {
     }
     return valido;
   };
-  [nome, tel].forEach((i) => {
-    i.addEventListener('input', () => { atualizar(); marcar(i === nome ? 'nome' : 'telefone', false); });
-    i.addEventListener('blur', () => { if (i.value.trim()) marcar(i === nome ? 'nome' : 'telefone', true); });
+  Object.entries(campos).forEach(([k, i]) => {
+    i.addEventListener('input', () => { atualizar(); marcar(k, false); });
+    i.addEventListener('blur', () => { if (i.value.trim()) marcar(k, true); });
   });
   $$('input[type="radio"]', form).forEach((r) => r.addEventListener('change', () => { atualizar(); if (r.name === 'servico') marcar('servico', false); }));
   // escolher um público nos cartões já marca no formulário
@@ -429,7 +433,7 @@ if (form) {
   }));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const res = ['nome', 'telefone', 'servico'].map((k) => [k, marcar(k, true)]);
+    const res = ['nome', 'telefone', 'cidade', 'servico'].map((k) => [k, marcar(k, true)]);
     const erro = res.find(([, v]) => !v);
     if (erro) {
       const [input] = regras[erro[0]];
@@ -438,7 +442,7 @@ if (form) {
       (input || form.querySelector('input[name="servico"]')).focus();
       return;
     }
-    const texto = `Olá, DGL! Vim pelo site da DGL Telhadista.\n\nMeu nome é ${valor('nome')}. Preciso de ${valor('servico')} para ${valor('perfil')}. Meu telefone é ${valor('telefone')}.`;
+    const texto = `Olá, DGL! Vim pelo site da DGL Telhadista.\n\nMeu nome é ${valor('nome')}. Preciso de ${valor('servico')} para ${valor('perfil')}, em ${valor('cidade')}. Meu telefone é ${valor('telefone')}.${msg.value.trim() ? `\n\nSobre o serviço: ${msg.value.trim()}` : ''}`;
     const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
     // o site não tem como saber se a mensagem foi enviada: só abre o WhatsApp e sempre deixa um link de reserva
     let aba = null;
