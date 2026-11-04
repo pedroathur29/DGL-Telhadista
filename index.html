@@ -40,7 +40,7 @@
   <meta name="theme-color" content="#0f1a2c">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="assets/img/casa-1600.webp" imagesrcset="assets/img/casa-800.webp 800w, assets/img/casa-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
-  <link rel="stylesheet" href="css/style.css?v=202611032020">
+  <link rel="stylesheet" href="css/style.css?v=202611032110">
   <script>
     /* Só com JavaScript a página entra no modo animado e trava a rolagem durante a abertura.
        Se o js/app.js não carregar ou não rodar em 8 s, a página volta para a versão estática e navegável. */
@@ -145,7 +145,8 @@
             <p class="chapter__tag">Vai construir ou ampliar?</p>
             <h3 class="chapter__title">Construção</h3>
             <p class="chapter__text">Telhado novo, do zero, para casa em construção, ampliação, edícula ou galpão. A DGL monta a estrutura e cobre tudo, deixando o telhado pronto para a chuva.</p>
-            <ul class="chapter__list">
+            <button type="button" class="chapter__more" aria-expanded="false" aria-controls="inclui-construcao" data-chapter-more hidden>O que inclui</button>
+            <ul class="chapter__list" id="inclui-construcao">
               <li>Estrutura de madeira com caibros, ripas e o caimento certo</li>
               <li>Colocação das telhas, cumeeira e acabamentos do beiral</li>
               <li>Cronograma combinado antes de começar</li>
@@ -157,7 +158,8 @@
             <p class="chapter__tag">Goteira ou telha quebrada?</p>
             <h3 class="chapter__title">Manutenção</h3>
             <p class="chapter__text">Manutenção preventiva e corretiva para o telhado que já existe: goteira, infiltração, telha quebrada ou fora do lugar. Cuidar cedo evita que o problema chegue ao forro, às paredes e aos móveis.</p>
-            <ul class="chapter__list">
+            <button type="button" class="chapter__more" aria-expanded="false" aria-controls="inclui-manutencao" data-chapter-more hidden>O que inclui</button>
+            <ul class="chapter__list" id="inclui-manutencao">
               <li>Vistoria para encontrar a causa do problema</li>
               <li>Troca de telhas quebradas e ajuste das deslocadas</li>
               <li>Revisão da cumeeira e limpeza das calhas</li>
@@ -169,7 +171,8 @@
             <p class="chapter__tag">Telhado velho ou comprometido?</p>
             <h3 class="chapter__title">Reformas</h3>
             <p class="chapter__text">Quando o telhado está velho, com muitas telhas danificadas ou estrutura comprometida, a reforma troca o que precisa e deixa a cobertura firme e com cara de nova.</p>
-            <ul class="chapter__list">
+            <button type="button" class="chapter__more" aria-expanded="false" aria-controls="inclui-reforma" data-chapter-more hidden>O que inclui</button>
+            <ul class="chapter__list" id="inclui-reforma">
               <li>Troca total ou parcial das telhas</li>
               <li>Recuperação ou substituição do madeiramento</li>
               <li>Acabamento caprichado, do beiral à cumeeira</li>
@@ -493,6 +496,6 @@
   <a class="wa-float" href="https://wa.me/5519993101979?text=Ol%C3%A1%2C%20DGL!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener" aria-label="Conversar com a DGL pelo WhatsApp" data-float><svg aria-hidden="true"><use href="#i-wa"/></svg></a>
 
   <button class="motion-toggle" type="button" data-motion-toggle hidden></button>
-  <script src="js/app.js?v=202611032020" defer onerror="window.__dglFail && window.__dglFail()"></script>
+  <script src="js/app.js?v=202611032110" defer onerror="window.__dglFail && window.__dglFail()"></script>
 </body>
 </html>

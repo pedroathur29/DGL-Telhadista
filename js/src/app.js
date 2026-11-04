@@ -498,3 +498,14 @@ if (systemReduce) {
     aplicar();
   }
 }
+
+/* ---------- celular: "O que inclui" abre a lista do serviço dentro do cartão ---------- */
+$$('[data-chapter-more]').forEach((b) => {
+  const card = b.closest('.chapter');
+  b.hidden = false;
+  b.addEventListener('click', () => {
+    const abrir = !card.classList.contains('is-open');
+    card.classList.toggle('is-open', abrir);
+    b.setAttribute('aria-expanded', String(abrir));
+  });
+});
