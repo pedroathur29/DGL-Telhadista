@@ -138,6 +138,8 @@ html:not(.js) .loader { display: none; }
 }
 .header.is-solid { background: rgba(15, 26, 44, 0.82); -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2); padding-block: 10px; }
 .header.is-hidden { transform: translateY(-110%); }
+/* teclado: o menu volta a aparecer quando recebe o foco */
+.header.is-hidden:focus-within { transform: none; }
 .brand { display: inline-flex; align-items: center; gap: 10px; margin-right: auto; font-size: 1.15rem; letter-spacing: -0.02em; }
 .brand__mark { height: 40px; padding: 6px 10px; border-radius: 12px; background: #fff; display: grid; place-items: center; transition: transform 0.6s var(--ease); }
 .brand__mark img { height: 28px; width: auto; display: block; }
@@ -170,6 +172,8 @@ html:not(.js) .loader { display: none; }
 
 /* ---------- 7. a história em 3D (abertura + serviços) ---------- */
 .story { position: relative; height: 520svh; background: var(--noite); }
+/* celular: história mais curta, menos rolagem para chegar aos trabalhos e ao orçamento */
+@media (max-width: 63.99em) { .story { height: 400svh; } }
 .story__stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
 .story__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .story__fallback { position: absolute; inset: 0; display: none; }

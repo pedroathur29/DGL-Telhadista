@@ -40,7 +40,7 @@
   <meta name="theme-color" content="#0f1a2c">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="assets/img/casa-1600.webp" imagesrcset="assets/img/casa-800.webp 800w, assets/img/casa-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
-  <link rel="stylesheet" href="css/style.css?v=202611032110">
+  <link rel="stylesheet" href="css/style.css?v=202611032140">
   <script>
     /* Só com JavaScript a página entra no modo animado e trava a rolagem durante a abertura.
        Se o js/app.js não carregar ou não rodar em 8 s, a página volta para a versão estática e navegável. */
@@ -124,8 +124,9 @@
         <div class="hero" data-hero>
           <p class="hero__kicker" data-hero-fade><span class="dot" aria-hidden="true"></span>Santa Bárbara d'Oeste – SP e região · Serviços gerais em telhados</p>
           <h1 class="hero__title" data-split>
-            <span class="hero__line">Telhados</span>
-            <span class="hero__line hero__line--accent">no prazo.</span>
+            <span class="visually-hidden">Telhados no prazo.</span>
+            <span class="hero__line" aria-hidden="true">Telhados</span>
+            <span class="hero__line hero__line--accent" aria-hidden="true">no prazo.</span>
           </h1>
           <div class="hero__bottom">
             <p class="hero__lead" data-hero-fade>Construção, manutenção e reforma de telhados e coberturas, com cronograma combinado e acabamento caprichado.</p>
@@ -493,9 +494,11 @@
     </div>
   </footer>
 
-  <a class="wa-float" href="https://wa.me/5519993101979?text=Ol%C3%A1%2C%20DGL!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener" aria-label="Conversar com a DGL pelo WhatsApp" data-float><svg aria-hidden="true"><use href="#i-wa"/></svg></a>
+  <aside aria-label="Atalho para o WhatsApp">
+    <a class="wa-float" href="https://wa.me/5519993101979?text=Ol%C3%A1%2C%20DGL!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener" aria-label="Conversar com a DGL pelo WhatsApp" data-float><svg aria-hidden="true"><use href="#i-wa"/></svg></a>
+  </aside>
 
   <button class="motion-toggle" type="button" data-motion-toggle hidden></button>
-  <script src="js/app.js?v=202611032110" defer onerror="window.__dglFail && window.__dglFail()"></script>
+  <script src="js/app.js?v=202611032140" defer onerror="window.__dglFail && window.__dglFail()"></script>
 </body>
 </html>

@@ -77,7 +77,7 @@ function initRoof(scene) {
   try {
     // ?qualidade=baixa força a versão leve (útil para testar em máquinas sem placa de vídeo)
     const forcedLow = /qualidade=baixa/.test(location.search);
-    roof = createRoofScene(canvas, { pixelRatio: forcedLow ? 1 : Math.min(window.devicePixelRatio || 1, 1.5), quality: isMobile || forcedLow ? 'medium' : 'high', baked: BAKED, grass: forcedLow ? 0 : undefined });
+    roof = createRoofScene(canvas, { pixelRatio: forcedLow ? 1 : Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.5), quality: isMobile || forcedLow ? 'medium' : 'high', baked: BAKED, grass: forcedLow ? 0 : undefined });
     roof.state.build = 0;
   } catch (err) {
     roof = null;
@@ -122,7 +122,7 @@ const heroLines = $$('.hero__line');
 let heroChars = [];
 const splitHero = () => {
   heroLines.forEach((line) => {
-    const s = new SplitText(line, { type: 'chars', charsClass: 'char' });
+    const s = new SplitText(line, { type: 'chars', charsClass: 'char', aria: 'none' });
     const mask = document.createElement('span'); mask.className = 'line-mask';
     line.parentNode.insertBefore(mask, line); mask.appendChild(line);
     heroChars.push(...s.chars);
@@ -494,7 +494,7 @@ if (systemReduce) {
       $$('[data-filter]', bar).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
       aplicar();
     }));
-    more.addEventListener('click', () => { aberto = true; aplicar(); const prox = items.find((li) => li.classList.contains('is-extra')); if (prox) prox.querySelector('img').focus?.(); });
+    more.addEventListener('click', () => { aberto = true; aplicar(); const prox = items.find((li) => li.classList.contains('is-extra')); if (prox) { prox.setAttribute('tabindex', '-1'); prox.focus({ preventScroll: true }); } });
     aplicar();
   }
 }
