@@ -316,17 +316,17 @@ html:not(.js) .loader { display: none; }
 
 /* ---------- 9. diferenciais ---------- */
 /* sobre a DGL */
-.about { position: relative; z-index: 2; background: var(--areia); color: var(--noite); padding: clamp(72px, 9vw, 140px) 0; }
+.about { position: relative; z-index: 2; background: var(--noite); color: var(--areia); padding: clamp(72px, 9vw, 140px) 0; }
 .about__inner { display: grid; gap: 28px; }
-.about__tag { font-size: var(--fs-small); font-weight: 600; color: var(--telha); margin-bottom: 10px; }
+.about__tag { font-size: var(--fs-small); font-weight: 600; color: var(--brasa); margin-bottom: 10px; }
 .about__title { font-size: var(--fs-h2, clamp(2.2rem, 1.4rem + 3vw, 4.2rem)); letter-spacing: -0.04em; max-width: 14ch; }
-.about__title em { font-style: normal; color: var(--telha); }
-.about__body { display: grid; gap: 16px; max-width: 62ch; font-size: var(--fs-body); color: #33404f; }
-.about__facts { display: grid; gap: 0; margin-top: 12px; border-top: 1px solid rgba(15, 26, 44, 0.16); }
-.about__facts > div { display: grid; grid-template-columns: 6.5rem 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(15, 26, 44, 0.16); font-size: var(--fs-small); }
-.about__facts dt { font-weight: 600; color: var(--noite); }
+.about__title em { font-style: normal; color: var(--brasa); }
+.about__body { display: grid; gap: 16px; max-width: 62ch; font-size: var(--fs-body); color: var(--light-soft); }
+.about__facts { display: grid; gap: 0; margin-top: 12px; border-top: 1px solid var(--line-light); }
+.about__facts > div { display: grid; grid-template-columns: 6.5rem 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line-light); font-size: var(--fs-small); }
+.about__facts dt { font-weight: 600; color: var(--areia); }
 .about__inner > * { min-width: 0; }
-.about__facts a { color: var(--noite); font-weight: 600; }
+.about__facts a { color: var(--areia); font-weight: 600; }
 @media (min-width: 24em) { .about__facts a { white-space: nowrap; } }
 @media (min-width: 56em) { .about__facts > div { grid-template-columns: 8.5rem 1fr; } }
 @media (min-width: 56em) { .about__inner { grid-template-columns: 5fr 7fr; gap: clamp(40px, 6vw, 96px); align-items: start; } }
@@ -347,21 +347,6 @@ html:not(.js) .loader { display: none; }
   .feature--a { grid-column: 1 / span 7; }
   .feature--b { grid-column: 9 / span 4; margin-top: clamp(120px, 16vw, 260px); }
   .feature--b .feature__media { aspect-ratio: 4 / 5; }
-}
-
-/* ---------- 10. valores (compacto) ---------- */
-.values { position: relative; z-index: 2; background: var(--noite); padding: clamp(64px, 8vw, 120px) 0; }
-.values__title { font-size: var(--fs-h3); margin-bottom: clamp(24px, 3vw, 40px); }
-.values__list { display: grid; gap: 0; }
-.value { display: grid; grid-template-columns: 9rem 1fr; gap: 4px 20px; align-items: baseline; padding: 18px 0; border-top: 1px solid var(--line-light); }
-.value h3 { font-size: clamp(1.25rem, 1rem + 0.8vw, 1.6rem); letter-spacing: -0.02em; }
-.value p { grid-column: 2; color: var(--light-soft); }
-.value__tag { grid-row: span 2; font-size: var(--fs-small); font-weight: 600; color: var(--brasa); }
-@media (min-width: 56em) {
-  .values__list { grid-template-columns: repeat(5, 1fr); gap: 24px; }
-  .value { grid-template-columns: 1fr; padding: 20px 0 0; }
-  .value p { grid-column: auto; }
-  .value__tag { grid-row: auto; }
 }
 
 /* ---------- 11. para quem ---------- */
