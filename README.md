@@ -10,6 +10,8 @@ Site de uma página, estático e feito do zero, sem framework e sem servidor.
 - **Orçamento**: o formulário só monta a mensagem e abre o WhatsApp. Nenhum dado é guardado ou enviado pelo site, e a mensagem só chega à DGL quando a pessoa toca em enviar no WhatsApp.
 - **Acessibilidade**: HTML semântico, link para pular ao conteúdo, foco visível, erros do formulário ligados a cada campo e anunciados, menu com foco preso e Esc. Com `prefers-reduced-motion` o site vira uma versão estática.
 - **Desempenho**: o 3D carrega depois da página, com uma imagem de reserva enquanto isso. O celular usa uma versão mais leve, e os efeitos diminuem sozinhos se o aparelho não sustentar a cena.
+  - **Cena:** as matrizes da cena são calculadas uma vez, e não a cada quadro. As telhas só recalculam o que mudou: a posição na montagem e na manutenção, e a cor na reforma. A sombra não é refeita quando só a cor muda. As árvores ao longe são instâncias.
+  - **Página:** as faixas que correm e as animações em CSS que repetem sem parar ficam paradas fora da tela.
 
 ## Estrutura
 - `index.html`, `css/style.css`

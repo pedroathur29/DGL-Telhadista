@@ -75,11 +75,12 @@ a, button, label, input { touch-action: manipulation; -webkit-tap-highlight-colo
 
 /* grão sutil sobre tudo, para tirar o aspecto digital "cru" */
 body::after {
-  content: ""; position: fixed; inset: -50%; z-index: 900; pointer-events: none; opacity: 0.06;
+  /* camada 1,2x a tela (antes 2x, quatro vezes a área) e deslocamento igual ao de antes, em vw/vh */
+  content: ""; position: fixed; inset: -10vh -10vw; z-index: 900; pointer-events: none; opacity: 0.06; will-change: transform;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 1.2s steps(6) infinite;
 }
-@keyframes grain { 0%, 100% { transform: translate(0, 0); } 20% { transform: translate(-4%, 3%); } 40% { transform: translate(3%, -2%); } 60% { transform: translate(-2%, -4%); } 80% { transform: translate(4%, 2%); } }
+@keyframes grain { 0%, 100% { transform: translate(0, 0); } 20% { transform: translate(-8vw, 6vh); } 40% { transform: translate(6vw, -4vh); } 60% { transform: translate(-4vw, -8vh); } 80% { transform: translate(8vw, 4vh); } }
 
 /* links sublinhados que se desenham */
 .ulink { background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat; transition: background-size 0.5s var(--ease), color 0.3s; padding-bottom: 2px; }
@@ -195,8 +196,10 @@ html:not(.js) .loader { display: none; }
 
 .hero { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 24px; padding: 110px max(var(--pad), env(safe-area-inset-right)) 32px max(var(--pad), env(safe-area-inset-left)); }
 .hero__kicker { display: inline-flex; align-items: center; gap: 10px; font-size: var(--fs-small); color: var(--light-soft); }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ouro); box-shadow: 0 0 0 0 rgba(169, 179, 194, 0.6); animation: pulse 2.2s infinite; }
-@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(169, 179, 194, 0.55); } 70% { box-shadow: 0 0 0 12px rgba(169, 179, 194, 0); } 100% { box-shadow: 0 0 0 0 rgba(169, 179, 194, 0); } }
+/* pulso do ponto: anel que cresce e some, feito com transform e opacity (antes era box-shadow, que repinta a cada quadro) */
+.dot { position: relative; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--ouro); }
+.dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: rgba(169, 179, 194, 0.55); animation: pulse 2.2s infinite; }
+@keyframes pulse { 0% { transform: scale(1); opacity: 1; } 70% { transform: scale(4); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
 .hero__title { font-size: var(--fs-hero); line-height: 0.9; letter-spacing: -0.045em; font-weight: 750; }
 .hero__line { display: block; }
 .hero__line--accent { color: var(--brasa); font-weight: 400; }
@@ -503,6 +506,7 @@ html:not(.js) .loader { display: none; }
 @media (hover: hover) { .wa-float:hover { transform: scale(1.08) rotate(-8deg); } }
 
 /* ---------- 17. estados iniciais das animações (só com JS e movimento liberado) ---------- */
+.anim-off .dot::after, .anim-off .hero__scroll i::after, .anim-off .bubble--typing i { animation-play-state: paused; }
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal] { opacity: 0; transform: translateY(40px); }
   .js [data-reveal-img] { clip-path: inset(18% 8% 18% 8% round var(--radius)); }
@@ -515,7 +519,7 @@ html:not(.js) .loader { display: none; }
 .motion-toggle:active { transform: scale(0.96); }
 .motion-toggle[hidden] { display: none; }
 @media (prefers-reduced-motion: reduce) {
-  body::after, .dot, .hero__scroll i::after { animation: none; }
+  body::after, .dot::after, .hero__scroll i::after { animation: none; }
 }
 .chapter__img { display: none; }
 

@@ -226,8 +226,11 @@ $$('[data-marquee]').forEach((row) => {
   if (reduce) return;
   const loop = gsap.to(tracks, { xPercent: -100, duration: 52, ease: 'none', repeat: -1 });
   if (dir < 0) { loop.progress(0.5); loop.timeScale(-1); }
+  // fora da tela a faixa fica parada (antes seguia mexendo no estilo a cada quadro sem ninguém ver)
+  loop.pause();
   ScrollTrigger.create({
     trigger: row, start: 'top bottom', end: 'bottom top',
+    onToggle: (self) => (self.isActive ? loop.resume() : loop.pause()),
     onUpdate: (self) => {
       const v = self.getVelocity() / 600;
       gsap.to(loop, { timeScale: dir * (1 + Math.min(Math.abs(v), 1.8)), duration: 0.4, overwrite: true,
@@ -297,13 +300,17 @@ if (fine && !reduce) {
 
 /* ---------- cabeçalho, progresso e botão flutuante ---------- */
 const header = $('[data-header]');
+const progressEl = $('[data-progress]');
+const setProgress = progressEl ? gsap.quickSetter(progressEl, 'scaleX') : () => {};
+let solid = null, hidden = null;
 ScrollTrigger.create({
   start: 0, end: 'max',
   onUpdate: (self) => {
     const y = self.scroll();
-    header.classList.toggle('is-solid', y > 40);
-    header.classList.toggle('is-hidden', self.direction === 1 && y > 600 && !document.body.classList.contains('menu-open'));
-    gsap.set('[data-progress]', { scaleX: self.progress });
+    const s = y > 40, h = self.direction === 1 && y > 600 && !document.body.classList.contains('menu-open');
+    if (s !== solid) header.classList.toggle('is-solid', (solid = s));
+    if (h !== hidden) header.classList.toggle('is-hidden', (hidden = h));
+    setProgress(self.progress);
   }
 });
 const float = $('[data-float]');
@@ -514,3 +521,9 @@ $$('[data-chapter-more]').forEach((b) => {
     b.setAttribute('aria-expanded', String(abrir));
   });
 });
+
+/* ---------- animações em CSS que repetem para sempre: pausadas quando a seção sai da tela ---------- */
+{
+  const io = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('anim-off', !e.isIntersecting)));
+  ['[data-hero]', '.phone'].forEach((sel) => { const el = $(sel); if (el) io.observe(el); });
+}

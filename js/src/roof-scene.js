@@ -440,13 +440,57 @@ export function createRoofScene(canvas, options = {}) {
     const hill = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), hillMat);
     hill.scale.set(90 + rand() * 70, 7 + rand() * 9, 60 + rand() * 40); hill.position.set(Math.cos(a) * d, -2, Math.sin(a) * d); hill.rotation.y = rand() * 3; scene.add(hill);
   }
+  // árvores ao longe: mesmas posições e sorteios de antes, mas cada malha vira uma InstancedMesh
+  // (8 chamadas de desenho em vez de 2 por árvore). Quais árvores entram no quadro é decidido a cada
+  // quadro, como o three.js fazia com cada árvore separada, para não desenhar as que estão atrás da câmera.
+  const farSets = [], farShaders = [];
   if (trees.length) {
     const src = trees.slice(0, 4);
     const far = high ? 34 : 12;
+    const per = src.map(() => []);
+    const mq = new THREE.Quaternion(), mp = new THREE.Vector3(), ms = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
     for (let i = 0; i < far; i++) {
-      const a = rand() * Math.PI * 2, d = 45 + Math.pow(rand(), 0.8) * 120; const t = src[i % src.length];
-      const c = new THREE.Group(); t.children.forEach((m) => { if (m.isMesh) { const mm = new THREE.Mesh(m.geometry, m.material); mm.castShadow = false; c.add(mm); } });
-      c.scale.setScalar(t.scale.x * (0.8 + rand() * 0.6)); c.position.set(Math.cos(a) * d, 0, Math.sin(a) * d); c.rotation.y = rand() * 6; scene.add(c);
+      const a = rand() * Math.PI * 2, d = 45 + Math.pow(rand(), 0.8) * 120; const k = i % src.length, t = src[k];
+      const sc = t.scale.x * (0.8 + rand() * 0.6); mp.set(Math.cos(a) * d, 0, Math.sin(a) * d); const ry = rand() * 6;
+      per[k].push(new THREE.Matrix4().compose(mp, mq.setFromAxisAngle(up, ry), ms.setScalar(sc)));
+    }
+    src.forEach((t, k) => {
+      if (!per[k].length) return;
+      // esfera que envolve a árvore inteira (galhos e folhas), usada para saber se ela aparece no quadro
+      const box = new THREE.Box3(); t.children.forEach((m) => { if (m.isMesh) { m.geometry.computeBoundingBox(); box.union(m.geometry.boundingBox); } });
+      const sphere = box.getBoundingSphere(new THREE.Sphere());
+      const items = per[k].map((m) => ({ m, s: sphere.clone().applyMatrix4(m) }));
+      const meshes = [];
+      t.children.forEach((m) => {
+        if (!m.isMesh) return;
+        let mat = m.material;
+        // as folhas do ez-tree trocam o cálculo de posição do three.js para balançar ao vento;
+        // a cópia do material inclui a matriz de cada instância, com o mesmo balanço
+        if (mat.onBeforeCompile && mat.onBeforeCompile !== THREE.Material.prototype.onBeforeCompile) {
+          const orig = mat, base = orig.onBeforeCompile;
+          mat = orig.clone();
+          mat.onBeforeCompile = (sh, r) => {
+            const keep = orig.userData.shader; base(sh, r); orig.userData.shader = keep;
+            sh.vertexShader = sh.vertexShader.replace('mvPosition = modelViewMatrix * mvPosition;', '#ifdef USE_INSTANCING\n        mvPosition = instanceMatrix * mvPosition;\n        #endif\n        mvPosition = modelViewMatrix * mvPosition;');
+            farShaders.push(sh);
+          };
+        }
+        const im = new THREE.InstancedMesh(m.geometry, mat, items.length);
+        im.castShadow = false; im.receiveShadow = m.receiveShadow; im.frustumCulled = false;
+        items.forEach((it, i) => im.setMatrixAt(i, it.m));
+        scene.add(im); meshes.push(im);
+      });
+      farSets.push({ items, meshes });
+    });
+  }
+  const frustum = new THREE.Frustum(), projView = new THREE.Matrix4();
+  function cullFar() {
+    camera.updateMatrixWorld();
+    projView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); frustum.setFromProjectionMatrix(projView);
+    for (const set of farSets) {
+      let n = 0;
+      for (const it of set.items) if (frustum.intersectsSphere(it.s)) { for (const im of set.meshes) im.setMatrixAt(n, it.m); n++; }
+      for (const im of set.meshes) { im.count = n; im.instanceMatrix.needsUpdate = true; }
     }
   }
 
@@ -501,7 +545,9 @@ export function createRoofScene(canvas, options = {}) {
   const liftSet = new Set(); main.base.capa.forEach((b, i) => { if (b.side === 0 && b.row > 2 && b.row < 10 && (b.col * 7 + b.row * 3) % 23 === 0) liftSet.add(i); });
   const worldInv = new THREE.Matrix4();
 
-  function applyHouse(h) {
+  // doMat: posição das telhas (montagem e manutenção); doCol: cor (reforma e brilho).
+  // Na reforma só a cor muda, então as ~2300 matrizes não são recalculadas nem reenviadas à placa de vídeo.
+  function applyHouse(h, doMat = true, doCol = true) {
     worldInv.copy(h.group.matrixWorld).invert();
     const localPallet = palletPos.clone().applyMatrix4(worldInv);
     const B = state.build;
@@ -509,6 +555,7 @@ export function createRoofScene(canvas, options = {}) {
       const mesh = h[kindName], list = h.base[kindName];
       for (let i = 0; i < list.length; i++) {
         const b = list[i];
+        if (doMat) {
         let t = clamp01((B * 1.12 - b.order) / 0.16);
         // voo em arco do palete até o lugar
         if (t < 1) {
@@ -527,22 +574,29 @@ export function createRoofScene(canvas, options = {}) {
           tq.multiply(tq2.setFromAxisAngle(AXZ, L * (b.j - 0.5) * 1.6));
         }
         tm.compose(tp, tq, ts); mesh.setMatrixAt(i, tm);
+        }
+        if (!doCol) continue;
         // reforma: telhado envelhecido -> onda de telhas novas
         const wave = smooth(clamp01(state.renew * 2.3 - b.colN * 1.25 - b.rowN * 0.12));
         tc.copy(b.color).multiply(OLD).lerp(b.color, wave);
         if (h === main && kindName === 'capa' && liftSet.has(i)) tc.lerp(NEW, state.glow * 0.6);
         mesh.setColorAt(i, tc);
       }
-      mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+      if (doMat) mesh.instanceMatrix.needsUpdate = true;
+      if (doCol && mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     }
     for (let i = 0; i < h.ridgeBase.length; i++) {
-      const rb = h.ridgeBase[i]; const t = clamp01((B * 1.12 - rb.order) / 0.08);
-      // cada peça da cumeeira desce só um pouco e cresce até o lugar (antes ficava uma fileira flutuando 1,6 m acima)
-      const k = smooth(t); tp.copy(rb.p); tp.y += (1 - k) * 0.3; ts.setScalar(t > 0 ? 0.6 + 0.4 * k : 0);
-      tm.compose(tp, rb.q, ts); h.ridgeMesh.setMatrixAt(i, tm);
-      tc.copy(rb.color).multiply(OLD).lerp(rb.color, smooth(clamp01(state.renew * 2.3 - 0.9))); h.ridgeMesh.setColorAt(i, tc);
+      const rb = h.ridgeBase[i];
+      if (doMat) {
+        const t = clamp01((B * 1.12 - rb.order) / 0.08);
+        // cada peça da cumeeira desce só um pouco e cresce até o lugar (antes ficava uma fileira flutuando 1,6 m acima)
+        const k = smooth(t); tp.copy(rb.p); tp.y += (1 - k) * 0.3; ts.setScalar(t > 0 ? 0.6 + 0.4 * k : 0);
+        tm.compose(tp, rb.q, ts); h.ridgeMesh.setMatrixAt(i, tm);
+      }
+      if (doCol) { tc.copy(rb.color).multiply(OLD).lerp(rb.color, smooth(clamp01(state.renew * 2.3 - 0.9))); h.ridgeMesh.setColorAt(i, tc); }
     }
-    h.ridgeMesh.instanceMatrix.needsUpdate = true; if (h.ridgeMesh.instanceColor) h.ridgeMesh.instanceColor.needsUpdate = true;
+    if (doMat) h.ridgeMesh.instanceMatrix.needsUpdate = true;
+    if (doCol && h.ridgeMesh.instanceColor) h.ridgeMesh.instanceColor.needsUpdate = true;
   }
 
   /* ----- câmera ----- */
@@ -568,21 +622,29 @@ export function createRoofScene(canvas, options = {}) {
     if (composer) { composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
   }
 
-  let lastKey = '', frameN = 0;
+  // nada na cena muda de lugar depois de montada (só as telhas, que são instâncias, e a câmera, que fica fora dela):
+  // as matrizes são calculadas uma vez, e não mais 2 a 4 vezes por quadro (uma por passe de renderização)
+  scene.updateMatrixWorld(true);
+  scene.matrixWorldAutoUpdate = false;
+
+  let lastMat = '', lastCol = '', frameN = 0;
   function render(dt = 1 / 60) {
     state.time += dt;
-    scene.updateMatrixWorld();
-    const key = state.build.toFixed(4) + state.lift.toFixed(4) + state.renew.toFixed(4) + state.glow.toFixed(4);
+    const mk = state.build.toFixed(4) + state.lift.toFixed(4), ck = state.renew.toFixed(4) + state.glow.toFixed(4);
+    const doMat = mk !== lastMat, doCol = ck !== lastCol;
     frameN++;
-    if (key !== lastKey) { houses.forEach(applyHouse); lastKey = key; renderer.shadowMap.needsUpdate = true; }
-    else if (frameN % 5 === 0) renderer.shadowMap.needsUpdate = true;
+    if (doMat || doCol) { houses.forEach((h) => applyHouse(h, doMat, doCol)); lastMat = mk; lastCol = ck; }
+    // a cor das telhas não muda a sombra: na reforma a sombra segue o ritmo normal (a cada 5 quadros, pelo balanço das folhas)
+    if (doMat || frameN % 5 === 0) renderer.shadowMap.needsUpdate = true;
     pallet.visible = state.build < 0.995;
     trees.forEach((t) => t.update(state.time));
+    for (const sh of farShaders) sh.uniforms.uTime.value = state.time;
     if (scene.userData.grassMat && scene.userData.grassMat.userData.shader) scene.userData.grassMat.userData.shader.uniforms.uTime.value = state.time;
     houses.forEach((h) => { h.interior.emissiveIntensity = 0.22; });
     const ox = Math.sin(state.orbit) * 1.6 + state.mx * 0.9;
     camera.position.set(camState.px + ox, camState.py + state.my * 0.6, camState.pz - ox * 0.4);
     target.set(camState.lx, camState.ly, camState.lz); camera.lookAt(target);
+    cullFar();
     if (composer) composer.render(); else renderer.render(scene, camera);
   }
 
