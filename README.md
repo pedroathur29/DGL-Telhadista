@@ -48,3 +48,5 @@ O site é publicado pelo GitHub Pages (branch `main`, pasta raiz). Não precisa 
 - Opcional: domínio próprio, Google Search Console e Perfil da Empresa no Google
 
 A DGL não tem Instagram nem endereço comercial, então o site não tem link de Instagram nem mapa.
+
+Passo a passo de domínio próprio, Search Console e Perfil da Empresa no Google: [docs/guia-dominio-google.md](docs/guia-dominio-google.md)
