@@ -40,7 +40,7 @@
   <meta name="theme-color" content="#0f1a2c">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="assets/img/casa-1600.webp" imagesrcset="assets/img/casa-800.webp 800w, assets/img/casa-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
-  <link rel="stylesheet" href="css/style.css?v=202611032150">
+  <link rel="stylesheet" href="css/style.css?v=202611032340">
   <script>
     /* Só com JavaScript a página entra no modo animado e trava a rolagem durante a abertura.
        Se o js/app.js não carregar ou não rodar em 8 s, a página volta para a versão estática e navegável. */
@@ -301,6 +301,25 @@
       </div>
     </section>
 
+    <!-- ===== Sobre a DGL (só com dados confirmados: serviços, área, CNPJ e contato) ===== -->
+    <section class="about" id="sobre" aria-labelledby="sobre-titulo">
+      <div class="wrap about__inner">
+        <div>
+          <p class="about__tag" data-reveal>Sobre a DGL</p>
+          <h2 id="sobre-titulo" class="about__title" data-split-lines>Telhado é o que a DGL <em>faz</em></h2>
+        </div>
+        <div class="about__body" data-reveal>
+          <p>A DGL Telhadista e Serviços Gerais trabalha com telhados e coberturas em Santa Bárbara d'Oeste – SP e região. Constrói telhados novos, faz manutenção preventiva e corretiva e reforma coberturas que já estão velhas ou comprometidas. Também monta pergolados e atende serviços de construção civil conforme a necessidade de cada obra.</p>
+          <p>O jeito de trabalhar é simples: você fala direto com quem cuida da obra, o cronograma é combinado antes de começar e o serviço só termina com o acabamento conferido, do beiral à cumeeira.</p>
+          <dl class="about__facts">
+            <div><dt>Empresa</dt><dd>DGL Telhadista e Serviços Gerais · CNPJ 32.770.448/0001-91</dd></div>
+            <div><dt>Atendimento</dt><dd>No local da obra, em Santa Bárbara d'Oeste e região</dd></div>
+            <div><dt>Contato</dt><dd><a class="ulink" href="https://wa.me/5519993101979" target="_blank" rel="noopener">WhatsApp (19) 99310-1979</a></dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== Para quem ===== -->
     <section class="audience" id="para-quem" aria-labelledby="quem-titulo">
       <div class="wrap">
@@ -475,13 +494,13 @@
           <h2 class="footer__h">Redes</h2>
           <a class="ulink" href="https://wa.me/5519993101979" target="_blank" rel="noopener">WhatsApp</a>
           <a class="ulink" href="https://www.facebook.com/share/1CpcmAbKnx/" target="_blank" rel="noopener">Facebook</a>
-          <!-- Instagram: incluir aqui quando a DGL enviar o link do perfil -->
         </div>
         <div>
           <h2 class="footer__h">Navegue</h2>
           <a class="ulink" href="#servicos">Serviços</a>
           <a class="ulink" href="#trabalhos">Trabalhos</a>
           <a class="ulink" href="#diferenciais">Diferenciais</a>
+          <a class="ulink" href="#sobre">Sobre a DGL</a>
           <a class="ulink" href="#para-quem">Para quem</a>
           <a class="ulink" href="#atendimento">Onde atendemos</a>
           <a class="ulink" href="#orcamento">Orçamento</a>
@@ -499,6 +518,6 @@
   </aside>
 
   <button class="motion-toggle" type="button" data-motion-toggle hidden></button>
-  <script src="js/app.js?v=202611032150" defer onerror="window.__dglFail && window.__dglFail()"></script>
+  <script src="js/app.js?v=202611032340" defer onerror="window.__dglFail && window.__dglFail()"></script>
 </body>
 </html>

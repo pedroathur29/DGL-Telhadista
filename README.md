@@ -43,4 +43,8 @@ npm run build
 O site é publicado pelo GitHub Pages (branch `main`, pasta raiz). Não precisa de servidor nem de build na hospedagem: os arquivos gerados (`js/app.js` e `js/scene.js`) já vão no repositório.
 
 ## Pendências do cliente
-- Link do Instagram (rodapé e perguntas)
+- Respostas do FAQ sobre orçamento, visita, garantia, pagamento e prazos
+- Confirmar autorização de quem aparece nas fotos
+- Opcional: domínio próprio, Google Search Console e Perfil da Empresa no Google
+
+A DGL não tem Instagram nem endereço comercial, então o site não tem link de Instagram nem mapa.

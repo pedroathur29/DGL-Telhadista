@@ -313,6 +313,19 @@ html:not(.js) .loader { display: none; }
 }
 
 /* ---------- 9. diferenciais ---------- */
+/* sobre a DGL */
+.about { position: relative; z-index: 2; background: var(--areia); color: var(--noite); padding: clamp(72px, 9vw, 140px) 0; }
+.about__inner { display: grid; gap: 28px; }
+.about__tag { font-size: var(--fs-small); font-weight: 600; color: var(--telha); margin-bottom: 10px; }
+.about__title { font-size: var(--fs-h2, clamp(2.2rem, 1.4rem + 3vw, 4.2rem)); letter-spacing: -0.04em; max-width: 14ch; }
+.about__title em { font-style: normal; color: var(--telha); }
+.about__body { display: grid; gap: 16px; max-width: 62ch; font-size: var(--fs-body); color: #33404f; }
+.about__facts { display: grid; gap: 0; margin-top: 12px; border-top: 1px solid rgba(15, 26, 44, 0.16); }
+.about__facts > div { display: grid; grid-template-columns: 6.5rem 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(15, 26, 44, 0.16); font-size: var(--fs-small); }
+.about__facts dt { font-weight: 600; color: var(--noite); }
+.about__facts a { color: var(--noite); font-weight: 600; white-space: nowrap; }
+@media (min-width: 56em) { .about__facts > div { grid-template-columns: 8.5rem 1fr; } }
+@media (min-width: 56em) { .about__inner { grid-template-columns: 5fr 7fr; gap: clamp(40px, 6vw, 96px); align-items: start; } }
 .diff { background: var(--areia); color: var(--noite); padding: clamp(90px, 12vw, 200px) 0; position: relative; z-index: 2; }
 .diff__statement { font-size: clamp(1.8rem, 1rem + 3vw, 4.2rem); line-height: 1.02; letter-spacing: -0.045em; max-width: 18ch; font-weight: 750; }
 .diff__statement .word { display: inline-block; opacity: 0.16; transition: none; }
