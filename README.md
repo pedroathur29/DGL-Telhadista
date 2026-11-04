@@ -60,9 +60,9 @@ Opções na URL para testes:
 - **Fotos**: as fotos estão sem metadados (incluindo GPS), conferido arquivo por arquivo e também nas versões antigas do histórico. Os números de casa estão borrados.
 
 ## Pendências do cliente
-- Confirmar a autorização de quem aparece nas fotos e se as legendas e os tipos de cada foto estão certos.
-- O FAQ hoje não fala de preço, visita, garantia, pagamento nem prazos, porque isso não foi confirmado. Se a DGL quiser, ela passa as condições reais e as perguntas entram.
-- Se quiser listar as cidades atendidas além de "e região", a DGL precisa confirmar quais são.
+- O FAQ não fala de preço, visita, garantia, pagamento nem prazos: a DGL combina isso direto pelo WhatsApp, e o site diz isso.
+- Cidades: o site diz "Santa Bárbara d'Oeste e região", sem lista de cidades, por decisão da DGL.
+- Fotos: não aparece ninguém nelas, e a DGL dispensou legendas por obra.
 - Opcional: domínio próprio, Google Search Console e Perfil da Empresa no Google. Passo a passo em [docs/guia-dominio-google.md](docs/guia-dominio-google.md).
 
 A DGL não tem Instagram nem endereço comercial, então o site não tem link de Instagram nem mapa.
