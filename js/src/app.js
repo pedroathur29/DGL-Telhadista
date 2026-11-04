@@ -56,7 +56,12 @@ const sceneReady = new Promise((resolve) => {
   const s = document.createElement('script');
   s.src = me ? me.getAttribute('src').replace('app.js', 'scene.js') : 'js/scene.js';
   s.async = true;
-  s.onload = () => resolve(window.DGLScene || null);
+  s.onload = () => {
+    const sc = window.DGLScene;
+    if (!sc) return resolve(null);
+    // espera as texturas (no máximo 6 s; se demorarem, segue e elas aparecem quando chegarem)
+    Promise.race([sc.ready, new Promise((ok) => setTimeout(ok, 6000))]).then(() => resolve(sc));
+  };
   s.onerror = () => resolve(null);
   document.head.appendChild(s);
 });

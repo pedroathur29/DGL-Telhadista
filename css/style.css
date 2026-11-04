@@ -323,7 +323,9 @@ html:not(.js) .loader { display: none; }
 .about__facts { display: grid; gap: 0; margin-top: 12px; border-top: 1px solid rgba(15, 26, 44, 0.16); }
 .about__facts > div { display: grid; grid-template-columns: 6.5rem 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(15, 26, 44, 0.16); font-size: var(--fs-small); }
 .about__facts dt { font-weight: 600; color: var(--noite); }
-.about__facts a { color: var(--noite); font-weight: 600; white-space: nowrap; }
+.about__inner > * { min-width: 0; }
+.about__facts a { color: var(--noite); font-weight: 600; }
+@media (min-width: 24em) { .about__facts a { white-space: nowrap; } }
 @media (min-width: 56em) { .about__facts > div { grid-template-columns: 8.5rem 1fr; } }
 @media (min-width: 56em) { .about__inner { grid-template-columns: 5fr 7fr; gap: clamp(40px, 6vw, 96px); align-items: start; } }
 .diff { background: var(--areia); color: var(--noite); padding: clamp(90px, 12vw, 200px) 0; position: relative; z-index: 2; }

@@ -4,11 +4,12 @@
   "description": "Site da DGL Telhadista e Serviços em Gerais (telhado em 3D com Three.js e GSAP)",
   "scripts": {
     "build": "npm run build:app && npm run build:scene",
-    "build:app": "esbuild js/src/app.js --bundle --format=iife --minify --target=es2019 --outfile=js/app.js",
-    "build:scene": "esbuild js/src/scene-entry.js --bundle --format=iife --minify --target=es2019 --loader:.jpg=dataurl --loader:.webp=dataurl --outfile=js/scene.js"
+    "build:app": "esbuild js/src/app.js --bundle --format=iife --minify --target=es2019 --legal-comments=eof --outfile=js/app.js",
+    "build:scene": "node -e \"require('fs').rmSync('js/tex',{recursive:true,force:true})\" && esbuild js/src/scene-entry.js --bundle --format=iife --minify --target=es2019 --legal-comments=eof --loader:.webp=file --public-path=js --asset-names=tex/[name]-[hash] --outfile=js/scene.js",
+    "check": "sh scripts/csp-hash.sh && npm audit --omit=dev"
   },
   "devDependencies": {
-    "esbuild": "0.24.0"
+    "esbuild": "0.25.12"
   },
   "dependencies": {
     "gsap": "3.13.0",

@@ -2,6 +2,10 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
+  <!-- Segurança: o GitHub Pages não deixa configurar cabeçalhos, então a política vai aqui.
+       Se mudar o script inline do head, rode scripts/csp-hash.sh e atualize o sha256 abaixo. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NJEurM4e0Ld0taseNPT9ofYeJdGK8BF23OzQ9JfkdlY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>DGL Telhadista | Telhados em Santa Bárbara d'Oeste e região</title>
   <meta name="description" content="Construção, manutenção e reforma de telhados, pergolados e serviços de construção civil em Santa Bárbara d'Oeste – SP e região. Atendimento no local da obra e orçamento pelo WhatsApp (19) 99310-1979.">
@@ -40,7 +44,7 @@
   <meta name="theme-color" content="#0f1a2c">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="assets/img/casa-1600.webp" imagesrcset="assets/img/casa-800.webp 800w, assets/img/casa-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
-  <link rel="stylesheet" href="css/style.css?v=202611032340">
+  <link rel="stylesheet" href="css/style.css?v=202611040050">
   <script>
     /* Só com JavaScript a página entra no modo animado e trava a rolagem durante a abertura.
        Se o js/app.js não carregar ou não rodar em 8 s, a página volta para a versão estática e navegável. */
@@ -53,6 +57,8 @@
         var l = document.querySelector('[data-loader]'); if (l) l.remove();
       };
       setTimeout(function () { if (!window.__dglReady) window.__dglFail(); }, 8000);
+      // dglScriptError: se o js/app.js não carregar, volta para a versão estática na hora
+      window.addEventListener('error', function (e) { var t = e.target; if (t && t.tagName === 'SCRIPT' && /app\.js/.test(t.src)) window.__dglFail(); }, true);
     })(document.documentElement);
   </script>
 </head>
@@ -518,6 +524,6 @@
   </aside>
 
   <button class="motion-toggle" type="button" data-motion-toggle hidden></button>
-  <script src="js/app.js?v=202611032340" defer onerror="window.__dglFail && window.__dglFail()"></script>
+  <script src="js/app.js?v=202611040050" defer></script>
 </body>
 </html>
