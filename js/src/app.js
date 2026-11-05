@@ -78,8 +78,8 @@ if (reduce) story.classList.add('is-static');
 let startLvl = 0;
 // Nível inicial antes do primeiro quadro, para o aparelho fraco não engasgar até a cena se ajustar sozinha.
 function startLevel() {
-  const m = location.search.match(/qualidade=(baixa|[0-4])/);
-  if (m) return m[1] === 'baixa' ? 4 : +m[1];
+  const m = location.search.match(/qualidade=(baixa|[0-5])/);
+  if (m) return m[1] === 'baixa' ? 5 : +m[1];
   let gpu = '';
   try {
     const c = document.createElement('canvas'); const gl = c.getContext('webgl2') || c.getContext('webgl');
@@ -91,15 +91,18 @@ function startLevel() {
   } catch (e) { /* sem informação: decide pelo resto */ }
   const cores = navigator.hardwareConcurrency || 8, mem = navigator.deviceMemory || 8;
   const save = navigator.connection && navigator.connection.saveData;
-  if (save || /SwiftShader|llvmpipe|softpipe|Software|Microsoft Basic/i.test(gpu)) return 4;
+  if (save || /SwiftShader|llvmpipe|softpipe|Software|Microsoft Basic/i.test(gpu)) return 5;
   if (isMobile) {
-    if (/Apple/i.test(gpu)) return 2;
-    if (cores <= 4 || mem <= 3 || /Mali-(4|T)|Adreno \(TM\) [1-5]\d\d|PowerVR/i.test(gpu)) return 3;
-    return 2;
+    // celular: os de entrada começam no 4; só os mais fortes (iPhone, Adreno 6xx em diante com 6 GB ou mais) no 2
+    if (cores <= 4 || mem <= 3 || /Mali-(4|T|G[3-5]\d)|Adreno \(TM\) [1-5]\d\d|PowerVR|IMG/i.test(gpu)) return 4;
+    if (/Apple/i.test(gpu) || (/Adreno \(TM\) [6-9]\d\d/i.test(gpu) && mem >= 6 && cores >= 8)) return 2;
+    return 3;
   }
-  if (cores <= 2 || mem <= 2) return 3;
-  if (cores <= 4 || mem <= 4 || /Intel|Radeon\(TM\) (Graphics|Vega)|Mali|Adreno/i.test(gpu)) return 1;
-  return 0;
+  if (cores <= 2 || mem <= 2) return 4;
+  if (/Intel.*(UHD|HD Graphics)|Radeon\(TM\) (R\d|Vega [3-8]\b)|Mali|Adreno/i.test(gpu)) return 3;
+  if (cores <= 4 || mem <= 4 || /Intel|Radeon\(TM\) (Graphics|Vega)/i.test(gpu)) return 2;
+  if (/NVIDIA|GeForce|RTX|Radeon (RX|Pro)|Apple M/i.test(gpu)) return 0;
+  return 1;
 }
 // ?fps: mostra quadros por segundo e o nível em uso, para testar em aparelhos de verdade
 function makeHud() {
@@ -108,6 +111,9 @@ function makeHud() {
   d.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:2000;padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.7);color:#fff;font:12px/1.4 monospace;pointer-events:none';
   document.body.appendChild(d); return d;
 }
+// Do nível 2 em diante, o cabeçalho e os cartões sobre o 3D deixam de desfocar o fundo (o desfoque é refeito a cada
+// quadro da cena e pesa muito em aparelho fraco) e ficam um pouco mais opacos: a aparência é praticamente a mesma.
+function liteFx(lvl) { root.classList.toggle('fx-lite', lvl >= 2); }
 function initRoof(scene) {
   if (reduce) return;
   if (!scene) { root.classList.add('no-webgl'); root.classList.remove('scene-wait'); loadFallbacks(); return; }
@@ -120,9 +126,12 @@ function initRoof(scene) {
       pixelRatio: Math.min(dpr, startLvl === 0 ? 1.5 : 1.25),
       quality: isMobile || startLvl >= 2 ? 'medium' : 'high',
       post: startLvl === 0 ? 'full' : startLvl === 1 ? 'lite' : 'none',
+      // computador fraco: sem antisserrilhado no canvas (no celular ele custa pouco e fica ligado)
+      antialias: isMobile || startLvl < 3,
       baked: BAKED
     });
     if (startLvl > 2) roof.setLevel(startLvl);
+    liteFx(roof.getLevel());
     roof.state.build = 0;
   } catch (err) {
     roof = null;
@@ -154,19 +163,21 @@ function initRoof(scene) {
   if (fine) window.addEventListener('pointermove', poke, { passive: true });
   window.addEventListener('touchmove', poke, { passive: true });
 
-  // Qualidade adaptativa: a cada 60 quadros desenhados em ritmo cheio, se mais da metade passou de 34 ms
-  // (abaixo de 30 por segundo), desce um nível; se passou de 50 ms, desce dois.
-  let frames = 0, slow = 0, verySlow = 0, lastDraw = 0, prevFull = false;
+  // Qualidade adaptativa: mede o intervalo entre quadros desenhados (no ritmo cheio e também no de 30).
+  // A cada 40 quadros, se mais da metade ficou abaixo de 30 por segundo no ritmo cheio (ou abaixo de 25 no de 30),
+  // desce um nível; se ficou abaixo de 20, desce dois.
+  let frames = 0, slow = 0, verySlow = 0, lastDraw = 0;
   const hud = /[?&]fps\b/.test(location.search) ? makeHud() : null;
   let hudN = 0, hudT = performance.now();
   gsap.ticker.add((time, deltaMs) => {
-    if (!visible) { prevFull = false; return; }
+    if (!visible) { lastDraw = 0; return; }
     const now = performance.now();
     const lvl = roof.getLevel();
     const busy = now - lastInput < 700 || (buildIntro && buildIntro.isActive());
     const cap30 = lvl >= 4 || (lvl >= 1 && !busy);
-    if (cap30 && now - lastDraw < 31) { prevFull = false; return; }
-    const dt = lastDraw ? Math.min(now - lastDraw, 50) : deltaMs;
+    if (cap30 && now - lastDraw < 31) return;
+    const gap = lastDraw ? now - lastDraw : 0;
+    const dt = gap ? Math.min(gap, 50) : deltaMs;
     lastDraw = now;
     roof.state.mx += (pointer.x * 2 - roof.state.mx) * 0.05;
     roof.state.my += (-pointer.y * 1.4 - roof.state.my) * 0.05;
@@ -174,15 +185,14 @@ function initRoof(scene) {
     roof.render(dt / 1000);
     if (root.classList.contains('scene-wait')) root.classList.remove('scene-wait');
     if (hud) { hudN++; if (now - hudT > 500) { hud.textContent = Math.round(hudN * 1000 / (now - hudT)) + ' qps · nível ' + lvl; hudN = 0; hudT = now; } }
-    // só mede quadros seguidos em ritmo cheio (no ritmo de 30 o intervalo é proposital)
-    if (!cap30 && prevFull) {
-      frames++; if (deltaMs > 34) slow++; if (deltaMs > 50) verySlow++;
-      if (frames === 60) {
-        if (lvl < 4 && slow > 30) roof.setLevel(lvl + (verySlow > 30 ? 2 : 1));
+    // ignora a volta depois de uma pausa (aba escondida, cena fora da tela)
+    if (gap && gap < 1000) {
+      frames++; if (gap > (cap30 ? 40 : 34)) slow++; if (gap > 50) verySlow++;
+      if (frames === 40) {
+        if (lvl < 5 && slow > 20) { roof.setLevel(lvl + (verySlow > 20 ? 2 : 1)); liteFx(roof.getLevel()); }
         frames = 0; slow = 0; verySlow = 0;
       }
     }
-    prevFull = !cap30;
   });
 }
 

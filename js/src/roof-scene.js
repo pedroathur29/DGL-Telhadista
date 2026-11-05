@@ -327,7 +327,7 @@ export function createRoofScene(canvas, options = {}) {
   const high = opt.quality === 'high';
   const q = { texSize: opt.texSize || (high ? 1024 : 512), tileSegA: high ? 10 : 7, tileSegL: 1, shadow: high ? 4096 : 2048, grass: opt.grass !== undefined ? opt.grass : (high ? 40000 : 12000) };
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: opt.still });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: opt.antialias !== false, powerPreference: 'high-performance', preserveDrawingBuffer: opt.still });
   renderer.setPixelRatio(opt.pixelRatio);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -346,7 +346,13 @@ export function createRoofScene(canvas, options = {}) {
   u.turbidity.value = 7.5; u.rayleigh.value = 2.9; u.mieCoefficient.value = 0.0065; u.mieDirectionalG.value = 0.86;
   const sunDir = new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(90 - 8.5), THREE.MathUtils.degToRad(24));
   u.sunPosition.value.copy(sunDir);
-  scene.add(sky);
+  // O céu é desenhado uma vez só num cubo e vira o fundo da cena. Antes o cálculo da atmosfera rodava em cada pixel
+  // do céu a cada quadro; a imagem é a mesma (o céu só depende da direção do olhar), com uma fração do trabalho.
+  const skyScene = new THREE.Scene(); skyScene.add(sky);
+  const skyRT = new THREE.WebGLCubeRenderTarget(512, { type: THREE.HalfFloatType, generateMipmaps: false });
+  new THREE.CubeCamera(1, 8000, skyRT).update(renderer, skyScene);
+  scene.background = skyRT.texture;
+  sky.geometry.dispose(); sky.material.dispose();
   // nuvens: planos com textura de ruído, iluminadas pelo sol baixo
   const cloudTex = (() => {
     const c = document.createElement('canvas'); c.width = 512; c.height = 256; const x = c.getContext('2d'); const img = x.createImageData(512, 256); const N = makeNoise(17);
@@ -648,7 +654,7 @@ export function createRoofScene(canvas, options = {}) {
   scene.updateMatrixWorld(true);
   scene.matrixWorldAutoUpdate = false;
 
-  let lastMat = '', lastCol = '', frameN = 0, shadowEvery = 5;
+  let lastMat = '', lastCol = '', frameN = 0, shadowEvery = 5, shadowMove = 1, shadowDue = false;
   function render(dt = 1 / 60) {
     state.time += dt;
     const mk = state.build.toFixed(4) + state.lift.toFixed(4), ck = state.renew.toFixed(4) + state.glow.toFixed(4);
@@ -657,7 +663,10 @@ export function createRoofScene(canvas, options = {}) {
     if (doMat || doCol) { houses.forEach((h) => applyHouse(h, doMat, doCol)); lastMat = mk; lastCol = ck; }
     // a cor das telhas não muda a sombra: na reforma a sombra segue o ritmo normal (a cada 5 quadros, pelo balanço das folhas)
     // shadowEvery = 0: a sombra só muda quando as telhas se mexem (a das folhas fica parada)
-    if (doMat || (shadowEvery && frameN % shadowEvery === 0)) renderer.shadowMap.needsUpdate = true;
+    // shadowMove: nos níveis mais leves, com as telhas em movimento, a sombra é refeita a cada 3 quadros em vez de todo
+    // quadro (refazer a sombra desenha a cena inteira de novo); quando elas param, a última posição sempre entra
+    if (doMat) shadowDue = true;
+    if ((shadowDue && frameN % shadowMove === 0) || (shadowEvery && frameN % shadowEvery === 0)) { renderer.shadowMap.needsUpdate = true; shadowDue = false; }
     pallet.visible = state.build < 0.995;
     trees.forEach((t) => t.update(state.time));
     for (const sh of farShaders) sh.uniforms.uTime.value = state.time;
@@ -672,7 +681,9 @@ export function createRoofScene(canvas, options = {}) {
 
   // Níveis de qualidade, do mais completo ao mais leve. Cada nível inclui os anteriores.
   // 1: efeitos 'lite'  2: sem efeitos  3: resolução 1x, sombra 1024, sombra das folhas parada, metade da grama
-  // 4: resolução 0,75x e um quarto da grama. O telhado, a casa e as animações são os mesmos em todos.
+  // 4: resolução 0,75x, um quarto da grama, sombra com filtro mais simples
+  // 5: resolução 0,6x, sem grama solta (o chão continua com textura de grama), sombra 512.
+  // O telhado, a casa, as árvores e as animações são os mesmos em todos.
   const grassMesh = scene.children.find((o) => o.isInstancedMesh && o.material === scene.userData.grassMat);
   const grassFull = grassMesh ? grassMesh.count : 0;
   let level = post === 'full' ? 0 : post === 'lite' ? 1 : 2;
@@ -680,11 +691,15 @@ export function createRoofScene(canvas, options = {}) {
   const shadowTo = (n) => { if (sun.shadow.mapSize.x <= n) return; sun.shadow.mapSize.set(n, n); if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; } renderer.shadowMap.needsUpdate = true; };
   function setLevel(n) {
     if (n <= level) return level;
-    level = Math.min(n, 4);
+    level = Math.min(n, 5);
     if (level === 1 && composer) { dropComposer(); composer = makeComposer(true); }
     if (level >= 2 && composer) { dropComposer(); composer = null; }
     if (level >= 3) { renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 1)); shadowTo(1024); shadowEvery = 0; if (grassMesh) grassMesh.count = Math.round(grassFull / 2); }
-    if (level >= 4) { renderer.setPixelRatio(0.75); if (grassMesh) grassMesh.count = Math.round(grassFull / 4); }
+    if (level >= 4) {
+      renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 0.75)); shadowMove = 3; if (grassMesh) grassMesh.count = Math.round(grassFull / 4);
+      if (renderer.shadowMap.type !== THREE.PCFShadowMap) { renderer.shadowMap.type = THREE.PCFShadowMap; sun.shadow.radius = 1.5; scene.traverse((m) => { if (m.material) [].concat(m.material).forEach((mt) => { mt.needsUpdate = true; }); }); renderer.shadowMap.needsUpdate = true; }
+    }
+    if (level >= 5) { renderer.setPixelRatio(0.6); shadowTo(512); if (grassMesh) grassMesh.visible = false; }
     resize(size[0], size[1]);
     return level;
   }

@@ -141,6 +141,9 @@ html:not(.js) .loader { display: none; }
   transition: transform 0.6s var(--ease), background-color 0.4s, padding 0.4s var(--ease);
 }
 .header.is-solid { background: rgba(15, 26, 44, 0.82); -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2); padding-block: 10px; }
+/* aparelho mais fraco (nível 2 em diante): sem desfoque do fundo, que é refeito a cada quadro do 3D; um pouco mais opaco no lugar */
+.fx-lite .header.is-solid { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(15, 26, 44, 0.92); }
+.fx-lite .chapter { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(15, 26, 44, 0.86); }
 .header.is-hidden { transform: translateY(-110%); }
 /* teclado: o menu volta a aparecer quando recebe o foco */
 .header.is-hidden:focus-within { transform: none; }
