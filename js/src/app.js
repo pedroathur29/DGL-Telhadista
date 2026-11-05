@@ -75,14 +75,54 @@ const canvas = $('[data-canvas]');
 let roof = null;
 const isMobile = window.innerWidth < 760;
 if (reduce) story.classList.add('is-static');
+let startLvl = 0;
+// Nível inicial antes do primeiro quadro, para o aparelho fraco não engasgar até a cena se ajustar sozinha.
+function startLevel() {
+  const m = location.search.match(/qualidade=(baixa|[0-4])/);
+  if (m) return m[1] === 'baixa' ? 4 : +m[1];
+  let gpu = '';
+  try {
+    const c = document.createElement('canvas'); const gl = c.getContext('webgl2') || c.getContext('webgl');
+    if (gl) {
+      const ext = gl.getExtension('WEBGL_debug_renderer_info');
+      gpu = String(gl.getParameter(ext ? ext.UNMASKED_RENDERER_WEBGL : gl.RENDERER) || '');
+      const lose = gl.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext();
+    }
+  } catch (e) { /* sem informação: decide pelo resto */ }
+  const cores = navigator.hardwareConcurrency || 8, mem = navigator.deviceMemory || 8;
+  const save = navigator.connection && navigator.connection.saveData;
+  if (save || /SwiftShader|llvmpipe|softpipe|Software|Microsoft Basic/i.test(gpu)) return 4;
+  if (isMobile) {
+    if (/Apple/i.test(gpu)) return 2;
+    if (cores <= 4 || mem <= 3 || /Mali-(4|T)|Adreno \(TM\) [1-5]\d\d|PowerVR/i.test(gpu)) return 3;
+    return 2;
+  }
+  if (cores <= 2 || mem <= 2) return 3;
+  if (cores <= 4 || mem <= 4 || /Intel|Radeon\(TM\) (Graphics|Vega)|Mali|Adreno/i.test(gpu)) return 1;
+  return 0;
+}
+// ?fps: mostra quadros por segundo e o nível em uso, para testar em aparelhos de verdade
+function makeHud() {
+  const d = document.createElement('div');
+  d.setAttribute('aria-hidden', 'true');
+  d.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:2000;padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.7);color:#fff;font:12px/1.4 monospace;pointer-events:none';
+  document.body.appendChild(d); return d;
+}
 function initRoof(scene) {
   if (reduce) return;
   if (!scene) { root.classList.add('no-webgl'); root.classList.remove('scene-wait'); loadFallbacks(); return; }
   const { createRoofScene, BAKED } = scene;
   try {
-    // ?qualidade=baixa força a versão leve (útil para testar em máquinas sem placa de vídeo)
-    const forcedLow = /qualidade=baixa/.test(location.search);
-    roof = createRoofScene(canvas, { pixelRatio: forcedLow ? 1 : Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.5), quality: isMobile || forcedLow ? 'medium' : 'high', baked: BAKED, grass: forcedLow ? 0 : undefined });
+    // nível inicial pelo aparelho (0 = completo ... 4 = mais leve); ?qualidade=0 a 4 ou ?qualidade=baixa força um nível
+    startLvl = startLevel();
+    const dpr = window.devicePixelRatio || 1;
+    roof = createRoofScene(canvas, {
+      pixelRatio: Math.min(dpr, startLvl === 0 ? 1.5 : 1.25),
+      quality: isMobile || startLvl >= 2 ? 'medium' : 'high',
+      post: startLvl === 0 ? 'full' : startLvl === 1 ? 'lite' : 'none',
+      baked: BAKED
+    });
+    if (startLvl > 2) roof.setLevel(startLvl);
     roof.state.build = 0;
   } catch (err) {
     roof = null;
@@ -104,20 +144,45 @@ function initRoof(scene) {
   if (fine) window.addEventListener('pointermove', (e) => { pointer.x = e.clientX / window.innerWidth - 0.5; pointer.y = e.clientY / window.innerHeight - 0.5; });
   let visible = true;
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(story);
-  // qualidade adaptativa: se o aparelho não sustentar a cena, reduz efeitos e resolução
-  let frames = 0, slow = 0, degraded = 0;
+
+  // Parado (sem rolar nem mexer o mouse), só a órbita lenta e o vento se mexem: abaixo do nível completo,
+  // a cena desenha 30 quadros por segundo nesse tempo, sem diferença visível e com metade do trabalho.
+  // Rolando, volta na hora para a taxa cheia. No nível 4 fica sempre em 30, estável em vez de oscilar.
+  let lastInput = 0;
+  const poke = () => { lastInput = performance.now(); };
+  window.addEventListener('scroll', poke, { passive: true });
+  if (fine) window.addEventListener('pointermove', poke, { passive: true });
+  window.addEventListener('touchmove', poke, { passive: true });
+
+  // Qualidade adaptativa: a cada 60 quadros desenhados em ritmo cheio, se mais da metade passou de 34 ms
+  // (abaixo de 30 por segundo), desce um nível; se passou de 50 ms, desce dois.
+  let frames = 0, slow = 0, verySlow = 0, lastDraw = 0, prevFull = false;
+  const hud = /[?&]fps\b/.test(location.search) ? makeHud() : null;
+  let hudN = 0, hudT = performance.now();
   gsap.ticker.add((time, deltaMs) => {
-    if (!visible) return;
+    if (!visible) { prevFull = false; return; }
+    const now = performance.now();
+    const lvl = roof.getLevel();
+    const busy = now - lastInput < 700 || (buildIntro && buildIntro.isActive());
+    const cap30 = lvl >= 4 || (lvl >= 1 && !busy);
+    if (cap30 && now - lastDraw < 31) { prevFull = false; return; }
+    const dt = lastDraw ? Math.min(now - lastDraw, 50) : deltaMs;
+    lastDraw = now;
     roof.state.mx += (pointer.x * 2 - roof.state.mx) * 0.05;
     roof.state.my += (-pointer.y * 1.4 - roof.state.my) * 0.05;
     roof.state.orbit = Math.sin(time * 0.12) * 0.35;
-    roof.render(Math.min(deltaMs, 50) / 1000);
+    roof.render(dt / 1000);
     if (root.classList.contains('scene-wait')) root.classList.remove('scene-wait');
-    frames++; if (deltaMs > 34) slow++;
-    if (frames === 90) {
-      if (slow > 45 && degraded < 2) { roof.degrade(++degraded); resize(); }
-      frames = 0; slow = 0;
+    if (hud) { hudN++; if (now - hudT > 500) { hud.textContent = Math.round(hudN * 1000 / (now - hudT)) + ' qps · nível ' + lvl; hudN = 0; hudT = now; } }
+    // só mede quadros seguidos em ritmo cheio (no ritmo de 30 o intervalo é proposital)
+    if (!cap30 && prevFull) {
+      frames++; if (deltaMs > 34) slow++; if (deltaMs > 50) verySlow++;
+      if (frames === 60) {
+        if (lvl < 4 && slow > 30) roof.setLevel(lvl + (verySlow > 30 ? 2 : 1));
+        frames = 0; slow = 0; verySlow = 0;
+      }
     }
+    prevFull = !cap30;
   });
 }
 

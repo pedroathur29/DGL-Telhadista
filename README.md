@@ -9,7 +9,10 @@ Site de uma página, estático e feito do zero, sem framework e sem servidor.
 - **Galeria**: 25 fotos de obras com filtro por tipo e "ver mais". Sem JavaScript, todas as fotos aparecem.
 - **Orçamento**: o formulário só monta a mensagem e abre o WhatsApp. Nenhum dado é guardado ou enviado pelo site, e a mensagem só chega à DGL quando a pessoa toca em enviar no WhatsApp.
 - **Acessibilidade**: HTML semântico, link para pular ao conteúdo, foco visível, erros do formulário ligados a cada campo e anunciados, menu com foco preso e Esc. Com `prefers-reduced-motion` o site vira uma versão estática.
-- **Desempenho**: o 3D carrega depois da página, com uma imagem de reserva enquanto isso. O celular usa uma versão mais leve, e os efeitos diminuem sozinhos se o aparelho não sustentar a cena.
+- **Desempenho**: o 3D carrega depois da página, com uma imagem de reserva enquanto isso.
+  - **Níveis:** 0 completo; 1 efeitos com a oclusão em meia resolução; 2 sem efeitos (celular); 3 resolução 1x, sombra menor e metade da grama; 4 resolução 0,75x e um quarto da grama. O telhado, a casa e as animações são os mesmos em todos.
+  - **Nível inicial:** escolhido antes do primeiro quadro pela placa de vídeo, núcleos, memória e modo de economia de dados. Depois, se mais da metade dos quadros passar de 34 ms, a cena desce um nível sozinha.
+  - **Parado:** sem rolar nem mexer o mouse, abaixo do nível 0 a cena desenha 30 quadros por segundo; ao rolar, volta à taxa cheia. No nível 4 fica sempre em 30.
   - **Cena:** as matrizes da cena são calculadas uma vez, e não a cada quadro. As telhas só recalculam o que mudou: a posição na montagem e na manutenção, e a cor na reforma. A sombra não é refeita quando só a cor muda. As árvores ao longe são instâncias.
   - **Página:** as faixas que correm e as animações em CSS que repetem sem parar ficam paradas fora da tela.
 
@@ -44,7 +47,8 @@ Para testar localmente, sirva a pasta por HTTP, por exemplo com `python3 -m http
 
 Opções na URL para testes:
 - `?sem3d`: sem a cena 3D
-- `?qualidade=baixa`: versão leve da cena
+- `?qualidade=0` a `?qualidade=4`: força um nível da cena (0 completo, 4 mais leve); `?qualidade=baixa` é o nível 4
+- `?fps`: mostra quadros por segundo e o nível em uso
 - `?animar`: animações mesmo com movimento reduzido no sistema
 - `?debug`: expõe a cena no console
 

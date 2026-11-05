@@ -117,6 +117,8 @@ function loadBaked(baked) {
 }
 
 /* telha colonial com espessura: superfície externa, interna, bordas e pontas */
+// Ao longo do comprimento (t) o raio, a altura e o UV variam em linha reta, então um segmento só (segL = 1)
+// gera exatamente a mesma superfície que vários: as divisões extras eram triângulos a mais sem mudar a imagem.
 function tileGeometry({ len, r1, r2, thick, arc, segA, segL }) {
   const parts = [];
   const surface = (inner) => {
@@ -305,7 +307,7 @@ function buildHouse(opt, T, q) {
   g.add(canal, capa);
 
   // cumeeira
-  const ridgeGeo = tileGeometry({ len: 0.46, r1: 0.2, r2: 0.18, thick: 0.015, arc: Math.PI * 0.82, segA: q.tileSegA, segL: 2 });
+  const ridgeGeo = tileGeometry({ len: 0.46, r1: 0.2, r2: 0.18, thick: 0.015, arc: Math.PI * 0.82, segA: q.tileSegA, segL: 1 });
   const ridgeN = Math.ceil(depth / 0.4);
   const ridgeMesh = new THREE.InstancedMesh(ridgeGeo, clayMat, ridgeN); ridgeMesh.castShadow = true; ridgeMesh.frustumCulled = false;
   const ridgeBase = [];
@@ -323,7 +325,7 @@ function buildHouse(opt, T, q) {
 export function createRoofScene(canvas, options = {}) {
   const opt = Object.assign({ pixelRatio: Math.min(window.devicePixelRatio || 1, 2), quality: 'high', houses: 'single', preset: 'hero', still: false }, options);
   const high = opt.quality === 'high';
-  const q = { texSize: opt.texSize || (high ? 1024 : 512), tileSegA: high ? 10 : 7, tileSegL: high ? 4 : 2, shadow: high ? 4096 : 2048, grass: opt.grass !== undefined ? opt.grass : (high ? 40000 : 12000) };
+  const q = { texSize: opt.texSize || (high ? 1024 : 512), tileSegA: high ? 10 : 7, tileSegL: 1, shadow: high ? 4096 : 2048, grass: opt.grass !== undefined ? opt.grass : (high ? 40000 : 12000) };
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: opt.still });
   renderer.setPixelRatio(opt.pixelRatio);
@@ -416,7 +418,7 @@ export function createRoofScene(canvas, options = {}) {
   const trees = [];
   const addTree = (preset, seedN, x, z, s, ry = 0) => {
     const t = new Tree(); t.loadPreset(preset); t.options.seed = seedN; t.generate();
-    t.scale.setScalar(s); t.position.set(x, 0, z); t.rotation.y = ry;
+    t.scale.setScalar(s); t.position.set(x, 0, z); t.rotation.y = ry; t.userData.preset = preset; t.userData.seed = seedN;
     t.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
     scene.add(t); trees.push(t); return t;
   };
@@ -445,7 +447,16 @@ export function createRoofScene(canvas, options = {}) {
   // quadro, como o three.js fazia com cada árvore separada, para não desenhar as que estão atrás da câmera.
   const farSets = [], farShaders = [];
   if (trees.length) {
-    const src = trees.slice(0, 4);
+    // as árvores ao longe ficam a 45 m ou mais e ocupam poucos pixels: usam uma versão da mesma espécie,
+    // com as mesmas folhas, mas galhos com menos divisões (bem menos triângulos, sem diferença visível de longe)
+    const src = trees.slice(0, 4).map((t) => {
+      const lod = new Tree(); lod.loadPreset(t.userData.preset); lod.options.seed = t.userData.seed;
+      const b = lod.options.branch;
+      Object.keys(b.sections).forEach((k) => { b.sections[k] = Math.max(2, Math.ceil(b.sections[k] / 2)); });
+      Object.keys(b.segments).forEach((k) => { b.segments[k] = Math.max(3, Math.ceil(b.segments[k] / 2)); });
+      lod.generate(); lod.scale.copy(t.scale);
+      return lod;
+    });
     const far = high ? 34 : 12;
     const per = src.map(() => []);
     const mq = new THREE.Quaternion(), mp = new THREE.Vector3(), ms = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
@@ -496,7 +507,7 @@ export function createRoofScene(canvas, options = {}) {
 
   // grama instanciada perto da casa
   if (q.grass) {
-    const blade = new THREE.PlaneGeometry(0.026, 0.15, 1, 3); blade.translate(0, 0.075, 0);
+    const blade = new THREE.PlaneGeometry(0.026, 0.15, 1, 1); blade.translate(0, 0.075, 0);
     const bp = blade.attributes.position; for (let i = 0; i < bp.count; i++) { const y = bp.getY(i); bp.setX(i, bp.getX(i) * (1 - y / 0.34)); }
     const grassMat = new THREE.MeshStandardMaterial({ color: '#9aa45a', roughness: 0.9, side: THREE.DoubleSide });
     grassMat.onBeforeCompile = (sh) => {
@@ -506,6 +517,8 @@ export function createRoofScene(canvas, options = {}) {
         float sway = sin(uTime * 1.6 + wp.x * 0.7 + wp.z * 0.5) * 0.06 + sin(uTime * 3.1 + wp.x * 2.3) * 0.02;
         transformed.x += sway * position.y * 3.0; transformed.z += sway * position.y * 1.5;`);
     };
+    // folha com 1 segmento na altura: o afinamento e o balanço variam em linha reta com a altura,
+    // então o formato é o mesmo de antes com 3 vezes menos triângulos
     const grass = new THREE.InstancedMesh(blade, grassMat, q.grass); grass.receiveShadow = true;
     const m = new THREE.Matrix4(), qq = new THREE.Quaternion(), pp = new THREE.Vector3(), ss = new THREE.Vector3(), c = new THREE.Color();
     let gi = 0;
@@ -522,19 +535,26 @@ export function createRoofScene(canvas, options = {}) {
   }
 
   /* ----- pós-processamento ----- */
-  let composer = null, gtao = null;
-  if (high) {
-    const rt = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
-    composer = new EffectComposer(renderer, rt);
-    composer.addPass(new RenderPass(scene, camera));
-    gtao = new GTAOPass(scene, camera, 1, 1);
-    gtao.updateGtaoMaterial({ radius: 0.6, distanceExponent: 1.4, thickness: 1, scale: 1.1, samples: 12 });
+  // 'full': oclusão de ambiente em resolução cheia e antisserrilhado duplo (MSAA 4x + SMAA).
+  // 'lite': os mesmos efeitos, com a oclusão calculada em meia resolução (ela é suave, não perde detalhe)
+  // e só o SMAA. Fica quase igual e custa uma fração em placas de vídeo integradas.
+  function makeComposer(lite) {
+    const rt = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: lite ? 0 : 4 });
+    const c = new EffectComposer(renderer, rt);
+    c.addPass(new RenderPass(scene, camera));
+    const gtao = new GTAOPass(scene, camera, 1, 1);
+    gtao.updateGtaoMaterial({ radius: 0.6, distanceExponent: 1.4, thickness: 1, scale: 1.1, samples: lite ? 8 : 12 });
     gtao.blendIntensity = 0.85;
-    composer.addPass(gtao);
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.18, 0.5, 0.92));
-    composer.addPass(new OutputPass());
-    composer.addPass(new SMAAPass(1, 1));
+    if (lite) { const set = gtao.setSize.bind(gtao); gtao.setSize = (w, h) => set(Math.max(1, w >> 1), Math.max(1, h >> 1)); }
+    c.addPass(gtao);
+    c.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.18, 0.5, 0.92));
+    c.addPass(new OutputPass());
+    c.addPass(new SMAAPass(1, 1));
+    return c;
   }
+  const post = opt.post || (high ? 'full' : 'none');
+  let composer = post === 'none' ? null : makeComposer(post === 'lite');
+  let size = [1, 1];
 
   /* ----- estado animável ----- */
   const state = { build: 1, lift: 0, renew: 1, glow: 0, orbit: 0, mx: 0, my: 0, time: 0 };
@@ -619,6 +639,7 @@ export function createRoofScene(canvas, options = {}) {
   function resize(w, h) {
     renderer.setSize(w, h, false);
     camera.aspect = w / h; camera.fov = w / h < 0.8 ? 50 : 34; camera.updateProjectionMatrix();
+    size = [w, h];
     if (composer) { composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
   }
 
@@ -627,7 +648,7 @@ export function createRoofScene(canvas, options = {}) {
   scene.updateMatrixWorld(true);
   scene.matrixWorldAutoUpdate = false;
 
-  let lastMat = '', lastCol = '', frameN = 0;
+  let lastMat = '', lastCol = '', frameN = 0, shadowEvery = 5;
   function render(dt = 1 / 60) {
     state.time += dt;
     const mk = state.build.toFixed(4) + state.lift.toFixed(4), ck = state.renew.toFixed(4) + state.glow.toFixed(4);
@@ -635,7 +656,8 @@ export function createRoofScene(canvas, options = {}) {
     frameN++;
     if (doMat || doCol) { houses.forEach((h) => applyHouse(h, doMat, doCol)); lastMat = mk; lastCol = ck; }
     // a cor das telhas não muda a sombra: na reforma a sombra segue o ritmo normal (a cada 5 quadros, pelo balanço das folhas)
-    if (doMat || frameN % 5 === 0) renderer.shadowMap.needsUpdate = true;
+    // shadowEvery = 0: a sombra só muda quando as telhas se mexem (a das folhas fica parada)
+    if (doMat || (shadowEvery && frameN % shadowEvery === 0)) renderer.shadowMap.needsUpdate = true;
     pallet.visible = state.build < 0.995;
     trees.forEach((t) => t.update(state.time));
     for (const sh of farShaders) sh.uniforms.uTime.value = state.time;
@@ -648,11 +670,26 @@ export function createRoofScene(canvas, options = {}) {
     if (composer) composer.render(); else renderer.render(scene, camera);
   }
 
-  // nível 1: sem pós-processamento; nível 2: também menos resolução e sombra menor
-  function degrade(level) {
-    if (level >= 1) composer = null;
-    if (level >= 2) { renderer.setPixelRatio(1); sun.shadow.mapSize.set(1024, 1024); if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; } }
+  // Níveis de qualidade, do mais completo ao mais leve. Cada nível inclui os anteriores.
+  // 1: efeitos 'lite'  2: sem efeitos  3: resolução 1x, sombra 1024, sombra das folhas parada, metade da grama
+  // 4: resolução 0,75x e um quarto da grama. O telhado, a casa e as animações são os mesmos em todos.
+  const grassMesh = scene.children.find((o) => o.isInstancedMesh && o.material === scene.userData.grassMat);
+  const grassFull = grassMesh ? grassMesh.count : 0;
+  let level = post === 'full' ? 0 : post === 'lite' ? 1 : 2;
+  const dropComposer = () => { composer.passes.forEach((ps) => ps.dispose && ps.dispose()); composer.dispose(); };
+  const shadowTo = (n) => { if (sun.shadow.mapSize.x <= n) return; sun.shadow.mapSize.set(n, n); if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; } renderer.shadowMap.needsUpdate = true; };
+  function setLevel(n) {
+    if (n <= level) return level;
+    level = Math.min(n, 4);
+    if (level === 1 && composer) { dropComposer(); composer = makeComposer(true); }
+    if (level >= 2 && composer) { dropComposer(); composer = null; }
+    if (level >= 3) { renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 1)); shadowTo(1024); shadowEvery = 0; if (grassMesh) grassMesh.count = Math.round(grassFull / 2); }
+    if (level >= 4) { renderer.setPixelRatio(0.75); if (grassMesh) grassMesh.count = Math.round(grassFull / 4); }
+    resize(size[0], size[1]);
+    return level;
   }
+  const degrade = (n) => setLevel(n);
+  const getLevel = () => level;
 
-  return { THREE, renderer, scene, camera, state, camState, shots, setShot, resize, render, degrade, houses, main };
+  return { THREE, renderer, scene, camera, state, camState, shots, setShot, resize, render, degrade, setLevel, getLevel, houses, main };
 }
