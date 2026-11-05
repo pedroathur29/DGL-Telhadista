@@ -69,6 +69,7 @@ const sceneReady = new Promise((resolve) => {
 const loadFallbacks = () => $$('[data-fb][data-src]').forEach((img) => { img.srcset = img.dataset.srcset; img.src = img.dataset.src; img.removeAttribute('data-src'); });
 let introDone = false;
 let buildIntro = null;
+let roofWarm = false;
 /* ---------- cena 3D ---------- */
 const story = $('[data-story]');
 const canvas = $('[data-canvas]');
@@ -128,6 +129,9 @@ function initRoof(scene) {
       post: startLvl === 0 ? 'full' : startLvl === 1 ? 'lite' : 'none',
       // computador fraco: sem antisserrilhado no canvas (no celular ele custa pouco e fica ligado)
       antialias: isMobile || startLvl < 3,
+      debug: /[?&]debug\b/.test(location.search),
+      // nos níveis leves a grama solta já nasce com a quantidade que vai ser usada (menos trabalho para abrir)
+      grass: startLvl >= 5 ? 0 : startLvl === 4 ? 3000 : startLvl === 3 ? 6000 : undefined,
       baked: BAKED
     });
     if (startLvl > 2) roof.setLevel(startLvl);
@@ -138,7 +142,6 @@ function initRoof(scene) {
   }
   if (!roof) { root.classList.add('no-webgl'); root.classList.remove('scene-wait'); loadFallbacks(); return; }
   if (/[?&]debug\b/.test(location.search)) window.__dglRoof = roof;
-  if (introDone) buildIntro = gsap.to(roof.state, { build: 1, duration: 3.2, ease: 'power2.out' });
 
   const resize = () => roof.resize(canvas.clientWidth, canvas.clientHeight);
   resize();
@@ -147,6 +150,11 @@ function initRoof(scene) {
   // e alvo mais baixo, para a casa subir na tela e ficar acima dos textos e dos cartões de serviço
   if (isMobile) Object.entries(roof.shots).forEach(([k, s]) => { s.pos = s.pos.map((v, i) => (i === 1 ? v * 1.15 : v * 1.3)); s.look = s.look.slice(); s.look[1] -= k === 'hero' ? 0.8 : 1.9; });
   roof.setShot('hero');
+  // a cena só começa a ser desenhada depois que os shaders estão prontos; até lá fica a imagem de reserva
+  roof.warm().then(() => {
+    roofWarm = true;
+    if (introDone && !buildIntro && roof.state.build < 1) buildIntro = gsap.to(roof.state, { build: 1, duration: 3.2, ease: 'power2.out' });
+  });
 
   // paralaxe com o mouse e uma órbita bem lenta
   const pointer = { x: 0, y: 0 };
@@ -170,7 +178,7 @@ function initRoof(scene) {
   const hud = /[?&]fps\b/.test(location.search) ? makeHud() : null;
   let hudN = 0, hudT = performance.now();
   gsap.ticker.add((time, deltaMs) => {
-    if (!visible) { lastDraw = 0; return; }
+    if (!visible || !roofWarm) { lastDraw = 0; return; }
     const now = performance.now();
     const lvl = roof.getLevel();
     const busy = now - lastInput < 700 || (buildIntro && buildIntro.isActive());
@@ -215,7 +223,7 @@ function intro() {
   tl.from(heroChars, { yPercent: 115, rotate: 6, duration: 1.4, stagger: 0.035 }, 0)
     .from('[data-hero-fade]', { y: 30, autoAlpha: 0, duration: 1.1, stagger: 0.1 }, 0.35)
     .from('.header', { y: -30, autoAlpha: 0, duration: 1, clearProps: 'transform' }, 0.4);
-  if (roof) buildIntro = gsap.to(roof.state, { build: 1, duration: 3.2, ease: 'power2.out', delay: 0.1 });
+  if (roof && roofWarm) buildIntro = gsap.to(roof.state, { build: 1, duration: 3.2, ease: 'power2.out', delay: 0.1 });
   introDone = true;
 }
 

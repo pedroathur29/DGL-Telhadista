@@ -329,6 +329,9 @@ export function createRoofScene(canvas, options = {}) {
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: opt.antialias !== false, powerPreference: 'high-performance', preserveDrawingBuffer: opt.still });
   renderer.setPixelRatio(opt.pixelRatio);
+  // conferir erros de shader obriga o navegador a esperar cada compilação terminar (trava a página por segundos em
+  // aparelho fraco); o site já foi testado, então só confere com ?debug
+  renderer.debug.checkShaderErrors = !!opt.debug;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.46;
@@ -685,7 +688,8 @@ export function createRoofScene(canvas, options = {}) {
   // 5: resolução 0,6x, sem grama solta (o chão continua com textura de grama), sombra 512.
   // O telhado, a casa, as árvores e as animações são os mesmos em todos.
   const grassMesh = scene.children.find((o) => o.isInstancedMesh && o.material === scene.userData.grassMat);
-  const grassFull = grassMesh ? grassMesh.count : 0;
+  // grassFull: a quantidade do nível 0 (a grama pode já ter nascido reduzida para um nível leve)
+  const grassFull = high ? 40000 : 12000;
   let level = post === 'full' ? 0 : post === 'lite' ? 1 : 2;
   const dropComposer = () => { composer.passes.forEach((ps) => ps.dispose && ps.dispose()); composer.dispose(); };
   const shadowTo = (n) => { if (sun.shadow.mapSize.x <= n) return; sun.shadow.mapSize.set(n, n); if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; } renderer.shadowMap.needsUpdate = true; };
@@ -694,17 +698,19 @@ export function createRoofScene(canvas, options = {}) {
     level = Math.min(n, 5);
     if (level === 1 && composer) { dropComposer(); composer = makeComposer(true); }
     if (level >= 2 && composer) { dropComposer(); composer = null; }
-    if (level >= 3) { renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 1)); shadowTo(1024); shadowEvery = 0; if (grassMesh) grassMesh.count = Math.round(grassFull / 2); }
+    if (level >= 3) { renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 1)); shadowTo(1024); shadowEvery = 0; if (grassMesh) grassMesh.count = Math.min(grassMesh.count, Math.round(grassFull / 2)); }
     if (level >= 4) {
-      renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 0.75)); shadowMove = 3; if (grassMesh) grassMesh.count = Math.round(grassFull / 4);
-      if (renderer.shadowMap.type !== THREE.PCFShadowMap) { renderer.shadowMap.type = THREE.PCFShadowMap; sun.shadow.radius = 1.5; scene.traverse((m) => { if (m.material) [].concat(m.material).forEach((mt) => { mt.needsUpdate = true; }); }); renderer.shadowMap.needsUpdate = true; }
+      renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 0.75)); shadowMove = 3; if (grassMesh) grassMesh.count = Math.min(grassMesh.count, Math.round(grassFull / 4));
+      if (!frameN && renderer.shadowMap.type !== THREE.PCFShadowMap) { renderer.shadowMap.type = THREE.PCFShadowMap; sun.shadow.radius = 1.5; scene.traverse((m) => { if (m.material) [].concat(m.material).forEach((mt) => { mt.needsUpdate = true; }); }); renderer.shadowMap.needsUpdate = true; }
     }
     if (level >= 5) { renderer.setPixelRatio(0.6); shadowTo(512); if (grassMesh) grassMesh.visible = false; }
     resize(size[0], size[1]);
     return level;
   }
   const degrade = (n) => setLevel(n);
+  // prepara os shaders antes do primeiro quadro sem travar a página (o navegador compila em paralelo quando consegue)
+  const warm = () => Promise.race([renderer.compileAsync(scene, camera).catch(() => {}), new Promise((ok) => setTimeout(ok, 10000))]);
   const getLevel = () => level;
 
-  return { THREE, renderer, scene, camera, state, camState, shots, setShot, resize, render, degrade, setLevel, getLevel, houses, main };
+  return { THREE, renderer, scene, camera, state, camState, shots, setShot, resize, render, degrade, setLevel, getLevel, warm, houses, main };
 }
