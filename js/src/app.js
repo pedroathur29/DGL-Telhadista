@@ -539,15 +539,6 @@ if (form) {
   Object.entries(out).forEach(([k, el]) => el.classList.toggle('is-empty', !valor(k)));
 }
 
-/* ---------- rodapé: os números do telefone fazem uma onda ---------- */
-const wave = $('[data-wave]');
-if (wave && !reduce) {
-  const s = new SplitText(wave, { type: 'chars', charsClass: 'char' });
-  const big = wave.closest('a');
-  big.addEventListener('pointerenter', () => gsap.fromTo(s.chars, { y: 0 }, { y: -18, duration: 0.3, ease: 'power2.out', stagger: 0.03, yoyo: true, repeat: 1 }));
-  gsap.from(s.chars, { yPercent: 60, opacity: 0, duration: 0.9, ease: 'expo.out', stagger: 0.025, scrollTrigger: { trigger: wave, start: 'top 95%', once: true } });
-}
-
 /* recalcula as posições quando as imagens terminam de carregar */
 window.addEventListener('load', () => ScrollTrigger.refresh());
 

@@ -684,6 +684,7 @@ export function createRoofScene(canvas, options = {}) {
 
   // Níveis de qualidade, do mais completo ao mais leve. Cada nível inclui os anteriores.
   // 1: efeitos 'lite'  2: sem efeitos  3: resolução 1x, sombra 1024, sombra das folhas parada, metade da grama
+  // (do 3 em diante, com as telhas em movimento a sombra é refeita a cada 3 quadros)
   // 4: resolução 0,75x, um quarto da grama, sombra com filtro mais simples
   // 5: resolução 0,6x, sem grama solta (o chão continua com textura de grama), sombra 512.
   // O telhado, a casa, as árvores e as animações são os mesmos em todos.
@@ -698,7 +699,7 @@ export function createRoofScene(canvas, options = {}) {
     level = Math.min(n, 5);
     if (level === 1 && composer) { dropComposer(); composer = makeComposer(true); }
     if (level >= 2 && composer) { dropComposer(); composer = null; }
-    if (level >= 3) { renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 1)); shadowTo(1024); shadowEvery = 0; if (grassMesh) grassMesh.count = Math.min(grassMesh.count, Math.round(grassFull / 2)); }
+    if (level >= 3) { renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 1)); shadowTo(1024); shadowEvery = 0; shadowMove = 3; if (grassMesh) grassMesh.count = Math.min(grassMesh.count, Math.round(grassFull / 2)); }
     if (level >= 4) {
       renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 0.75)); shadowMove = 3; if (grassMesh) grassMesh.count = Math.min(grassMesh.count, Math.round(grassFull / 4));
       if (!frameN && renderer.shadowMap.type !== THREE.PCFShadowMap) { renderer.shadowMap.type = THREE.PCFShadowMap; sun.shadow.radius = 1.5; scene.traverse((m) => { if (m.material) [].concat(m.material).forEach((mt) => { mt.needsUpdate = true; }); }); renderer.shadowMap.needsUpdate = true; }
