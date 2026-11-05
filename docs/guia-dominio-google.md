@@ -67,6 +67,8 @@ Ordem recomendada:
 
 **Quem faz:** o dono registra, ou o Pedro registra junto com ele, **no CNPJ da DGL** (32.770.448/0001-91). Assim o domínio é da empresa e não depende de uma pessoa. O Pedro e o Claude configuram o resto.
 
+> **Atualização:** a hospedagem vai para o Cloudflare Pages. Os passos 4 a 6 abaixo (GitHub Pages) foram substituídos pelo [guia de hospedagem no Cloudflare](guia-hospedagem-cloudflare.md).
+
 **Passo a passo**
 1. **Escolher o nome** (Dono e Pedro). Curto, fácil de falar no telefone, sem hífen se possível. Exemplos para checar se estão livres: `dgltelhadista.com.br`, `dgltelhados.com.br`. A busca é feita em https://registro.br.
 2. **Registrar** (Dono). Criar a conta no Registro.br com o CNPJ e um e-mail que ele use de verdade, porque os avisos de renovação vão para esse e-mail. Depois pagar com PIX, boleto ou cartão.

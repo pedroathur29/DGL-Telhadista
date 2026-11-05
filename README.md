@@ -64,5 +64,6 @@ Opções na URL para testes:
 - Cidades: o site diz "Santa Bárbara d'Oeste e região", sem lista de cidades, por decisão da DGL.
 - Fotos: não aparece ninguém nelas, e a DGL dispensou legendas por obra.
 - Opcional: domínio próprio, Google Search Console e Perfil da Empresa no Google. Passo a passo em [docs/guia-dominio-google.md](docs/guia-dominio-google.md).
+- Hospedagem no Cloudflare Pages e domínio: [docs/guia-hospedagem-cloudflare.md](docs/guia-hospedagem-cloudflare.md).
 
 A DGL não tem Instagram nem endereço comercial, então o site não tem link de Instagram nem mapa.
