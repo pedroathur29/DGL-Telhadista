@@ -1,0 +1,47 @@
+# Cabeçalhos HTTP do Cloudflare Pages (o GitHub Pages ignora este arquivo).
+# Se mudar o script inline do <head> do index.html, rode scripts/csp-hash.sh e atualize o sha256 aqui e no <meta> do index.html.
+# Cada caminho abaixo aparece uma vez em Cache-Control: o Cloudflare junta os valores quando vários caminhos casam.
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-NJEurM4e0Ld0taseNPT9ofYeJdGK8BF23OzQ9JfkdlY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+
+# Endereços de teste do Cloudflare: fora do Google.
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+# Página: sempre conferida, para a versão nova aparecer na hora.
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+
+# CSS e JS levam ?v= no endereço, que muda a cada publicação.
+/css/*
+  Cache-Control: public, max-age=86400
+/js/app.js
+  Cache-Control: public, max-age=86400
+/js/scene.js
+  Cache-Control: public, max-age=86400
+
+# Texturas e fontes: o nome do arquivo tem hash ou nunca muda.
+/js/tex/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Imagens: nome fixo, então uma semana.
+/assets/img/*
+  Cache-Control: public, max-age=604800
+/assets/logo.svg
+  Cache-Control: public, max-age=604800
+/assets/favicon.svg
+  Cache-Control: public, max-age=604800
+/assets/og-image.jpg
+  Cache-Control: public, max-age=604800
