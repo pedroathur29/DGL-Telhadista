@@ -188,7 +188,8 @@ html:not(.js) .loader { display: none; }
 .story__fallback img.is-on { opacity: 1; }
 .no-webgl .story__fallback { display: block; }
 /* enquanto a cena 3D carrega, a imagem da abertura aparece no lugar e a cena entra por cima */
-.scene-wait .story__fallback { display: block; }
+.scene-wait .story__fallback, .scene-fade .story__fallback { display: block; }
+.scene-wait .story__fallback img[data-fb="hero"], .scene-fade .story__fallback img[data-fb="hero"] { opacity: 1; transition: none; }
 .story__canvas { transition: opacity 0.9s ease; }
 .scene-wait .story__canvas { opacity: 0; }
 .no-webgl .story__canvas { display: none; }

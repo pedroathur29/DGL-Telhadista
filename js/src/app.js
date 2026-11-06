@@ -63,9 +63,13 @@ const runDetect = () => {
 const sceneSrc = (() => { const me = document.querySelector('script[src*="js/app.js"]'); return me ? me.getAttribute('src').replace('app.js', 'scene.js') : 'js/scene.js'; })();
 if (want3D && !window.DGLScene) {
   root.classList.add('scene-wait');
-  // prioridade baixa e só depois do carregamento da página: não disputa banda com a imagem e o texto do topo
-  const addPre = () => { const pre = document.createElement('link'); pre.rel = 'preload'; pre.as = 'script'; pre.href = sceneSrc; pre.fetchPriority = 'low'; document.head.appendChild(pre); };
-  if (document.readyState === 'complete') addPre(); else window.addEventListener('load', addPre, { once: true });
+  // começa assim que a imagem da casa do topo chega (ela aparece no lugar do 3D enquanto ele carrega),
+  // para não disputar banda com ela; prioridade baixa
+  let pre = null;
+  const addPre = () => { if (pre) return; pre = document.createElement('link'); pre.rel = 'preload'; pre.as = 'script'; pre.href = sceneSrc; pre.fetchPriority = 'low'; document.head.appendChild(pre); };
+  const heroImg = document.querySelector('[data-fb="hero"]');
+  if (!heroImg || heroImg.complete) addPre();
+  else { heroImg.addEventListener('load', addPre, { once: true }); heroImg.addEventListener('error', addPre, { once: true }); window.addEventListener('load', addPre, { once: true }); }
 }
 let startScene;
 const sceneGo = new Promise((go) => { startScene = go; });
@@ -191,7 +195,8 @@ function initRoof(scene) {
     roof.state.my += (-pointer.y * 1.4 - roof.state.my) * 0.05;
     roof.state.orbit = Math.sin(time * 0.12) * 0.35;
     roof.render(dt / 1000);
-    if (root.classList.contains('scene-wait')) root.classList.remove('scene-wait');
+    // a cena aparece por cima da imagem da casa; a imagem só sai depois do esmaecimento (sem fundo azul no meio)
+    if (root.classList.contains('scene-wait')) { root.classList.add('scene-fade'); root.classList.remove('scene-wait'); setTimeout(() => root.classList.remove('scene-fade'), 1000); }
     if (hud) { hudN++; if (now - hudT > 500) { hud.textContent = Math.round(hudN * 1000 / (now - hudT)) + ' qps · nível ' + lvl + ' (' + tierOf(lvl) + ')'; hudN = 0; hudT = now; } }
     if (!det.forced) monitor.frame(now, gap, cap30);
   });
@@ -236,9 +241,9 @@ function runLoader() {
 const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 700))]) : Promise.resolve();
 fontsReady.then(() => {
   runLoader();
-  // a cena 3D só é montada quando a cortina e o título já terminaram de entrar (cerca de 2 s); até lá aparece
-  // a imagem de reserva no fundo. Sem a abertura (movimento reduzido), começa na hora.
-  const delay = reduce || !loader ? 0 : 2100;
+  // a cena 3D é montada quando a cortina já subiu e o título já está quase parado (1,5 s); até lá, e enquanto a
+  // cena entra, aparece no fundo a imagem da casa. Sem a abertura (movimento reduzido), começa na hora.
+  const delay = reduce || !loader ? 0 : 1500;
   setTimeout(() => {
     const go = () => startScene();
     if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 600 }); else go();
