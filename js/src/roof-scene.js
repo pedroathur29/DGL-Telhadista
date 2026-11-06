@@ -15,6 +15,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { Tree } from './vendor/ez-tree/tree.js';
+import { LEVELS } from './quality.js';
 
 /* ---------- utilidades ---------- */
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
@@ -100,14 +101,14 @@ export function buildTextures(q) {
 }
 
 /* texturas já geradas (WebP embutido): sem custo de processamento ao abrir o site */
-function loadBaked(baked) {
+function loadBaked(baked, aniso = 8) {
   const loader = new THREE.TextureLoader();
   const reps = { plaster: [3, 2], concrete: [4, 4], grass: [26, 26] };
   const out = {};
   for (const [name, maps] of Object.entries(baked)) {
     out[name] = {};
     for (const [slot, url] of Object.entries(maps)) {
-      const t = loader.load(url); t.flipY = false; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8;
+      const t = loader.load(url); t.flipY = false; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = aniso;
       if (reps[name]) t.repeat.set(...reps[name]);
       if (slot === 'map') t.colorSpace = THREE.SRGBColorSpace;
       out[name][slot] = t;
@@ -389,7 +390,7 @@ export function createRoofScene(canvas, options = {}) {
   scene.add(sun, sun.target);
   scene.add(new THREE.HemisphereLight('#ffd7b5', '#2f2a1e', 0.22));
 
-  const T = opt.baked ? loadBaked(opt.baked) : buildTextures(q);
+  const T = opt.baked ? loadBaked(opt.baked, opt.anisotropy) : buildTextures(q);
 
   // terreno com grama
   const groundMat = new THREE.MeshStandardMaterial({ ...T.grass, roughness: 1 });
@@ -561,8 +562,7 @@ export function createRoofScene(canvas, options = {}) {
     c.addPass(new SMAAPass(1, 1));
     return c;
   }
-  const post = opt.post || (high ? 'full' : 'none');
-  let composer = post === 'none' ? null : makeComposer(post === 'lite');
+  let composer = null, composerKind = 'none';
   let size = [1, 1];
 
   /* ----- estado animável ----- */
@@ -682,32 +682,38 @@ export function createRoofScene(canvas, options = {}) {
     if (composer) composer.render(); else renderer.render(scene, camera);
   }
 
-  // Níveis de qualidade, do mais completo ao mais leve. Cada nível inclui os anteriores.
-  // 1: efeitos 'lite'  2: sem efeitos  3: resolução 1x, sombra 1024, sombra das folhas parada, metade da grama
-  // (do 3 em diante, com as telhas em movimento a sombra é refeita a cada 3 quadros)
-  // 4: resolução 0,75x, um quarto da grama, sombra com filtro mais simples
-  // 5: resolução 0,6x, sem grama solta (o chão continua com textura de grama), sombra 512.
-  // O telhado, a casa, as árvores e as animações são os mesmos em todos.
+  // Níveis de qualidade: a tabela fica em quality.js (LEVELS), a mesma usada pelo resto do site.
+  // setLevel sobe ou desce aplicando só o que muda; nada da cena é recriado (a grama só usa menos instâncias
+  // das que já existem, e o pós-processamento é criado ou descartado quando o nível pede).
   const grassMesh = scene.children.find((o) => o.isInstancedMesh && o.material === scene.userData.grassMat);
-  // grassFull: a quantidade do nível 0 (a grama pode já ter nascido reduzida para um nível leve)
-  const grassFull = high ? 40000 : 12000;
-  let level = post === 'full' ? 0 : post === 'lite' ? 1 : 2;
-  const dropComposer = () => { composer.passes.forEach((ps) => ps.dispose && ps.dispose()); composer.dispose(); };
-  const shadowTo = (n) => { if (sun.shadow.mapSize.x <= n) return; sun.shadow.mapSize.set(n, n); if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; } renderer.shadowMap.needsUpdate = true; };
+  const grassFull = high ? 40000 : 12000;            // quantidade do nível 0
+  const grassCap = grassMesh ? grassMesh.count : 0;  // quantas existem de fato (podem ter nascido menos, nos níveis leves)
+  const dprMax = opt.dprMax || window.devicePixelRatio || 1;
+  let level = -1;
+  const dropComposer = () => { composer.passes.forEach((ps) => ps.dispose && ps.dispose()); composer.dispose(); composer = null; composerKind = 'none'; };
+  const shadowTo = (n) => { if (sun.shadow.mapSize.x === n) return; sun.shadow.mapSize.set(n, n); if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; } renderer.shadowMap.needsUpdate = true; };
   function setLevel(n) {
-    if (n <= level) return level;
-    level = Math.min(n, 5);
-    if (level === 1 && composer) { dropComposer(); composer = makeComposer(true); }
-    if (level >= 2 && composer) { dropComposer(); composer = null; }
-    if (level >= 3) { renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 1)); shadowTo(1024); shadowEvery = 0; shadowMove = 3; if (grassMesh) grassMesh.count = Math.min(grassMesh.count, Math.round(grassFull / 2)); }
-    if (level >= 4) {
-      renderer.setPixelRatio(Math.min(renderer.getPixelRatio(), 0.75)); shadowMove = 3; if (grassMesh) grassMesh.count = Math.min(grassMesh.count, Math.round(grassFull / 4));
-      if (!frameN && renderer.shadowMap.type !== THREE.PCFShadowMap) { renderer.shadowMap.type = THREE.PCFShadowMap; sun.shadow.radius = 1.5; scene.traverse((m) => { if (m.material) [].concat(m.material).forEach((mt) => { mt.needsUpdate = true; }); }); renderer.shadowMap.needsUpdate = true; }
+    n = Math.max(0, Math.min(LEVELS.length - 1, n | 0));
+    if (n === level) return level;
+    const L = LEVELS[n];
+    if (L.post === 'none') { if (composer) dropComposer(); }
+    else if (composerKind !== L.post) { if (composer) dropComposer(); composer = makeComposer(L.post === 'lite'); composerKind = L.post; }
+    renderer.setPixelRatio(Math.min(dprMax, L.dpr));
+    shadowTo(L.shadow === 'base' ? q.shadow : L.shadow);
+    shadowEvery = L.shadowEvery; shadowMove = L.shadowMove;
+    if (grassMesh) { grassMesh.count = Math.min(grassCap, Math.round(grassFull * L.grass)); grassMesh.visible = grassMesh.count > 0; }
+    // o filtro da sombra só troca antes do primeiro quadro: depois, trocar recompila todos os materiais (pausa visível)
+    const type = L.softShadow ? THREE.PCFSoftShadowMap : THREE.PCFShadowMap;
+    if (!frameN && renderer.shadowMap.type !== type) {
+      renderer.shadowMap.type = type; sun.shadow.radius = L.softShadow ? 3 : 1.5;
+      scene.traverse((m) => { if (m.material) [].concat(m.material).forEach((mt) => { mt.needsUpdate = true; }); });
+      renderer.shadowMap.needsUpdate = true;
     }
-    if (level >= 5) { renderer.setPixelRatio(0.6); shadowTo(512); if (grassMesh) grassMesh.visible = false; }
+    level = n;
     resize(size[0], size[1]);
     return level;
   }
+  setLevel(opt.level !== undefined ? opt.level : (high ? 0 : 2));
   const degrade = (n) => setLevel(n);
   // prepara os shaders antes do primeiro quadro sem travar a página (o navegador compila em paralelo quando consegue)
   const warm = () => Promise.race([renderer.compileAsync(scene, camera).catch(() => {}), new Promise((ok) => setTimeout(ok, 10000))]);

@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
+import { LEVELS, MAX, tierOf, detect, createMonitor } from './quality.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -48,6 +49,12 @@ $$('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
 
 /* ---------- cena 3D: o arquivo pesado (three.js e texturas) carrega depois da página ---------- */
 const want3D = !reduce && !/sem3d/.test(location.search);
+const isMobile = window.innerWidth < 760;
+// faixa de qualidade escolhida antes de baixar a cena, para o aparelho fraco já baixar as texturas leves
+// (quality.js; ?qualidade=alta, media, baixa ou 0 a 5 força um nível)
+const det = want3D ? detect({ mobile: isMobile || matchMedia('(pointer: coarse)').matches }) : { level: MAX };
+const startLvl = det.level;
+const lowTex = LEVELS[startLvl].textures === 'low';
 const sceneReady = new Promise((resolve) => {
   if (!want3D) return resolve(null);
   if (window.DGLScene) return resolve(window.DGLScene);
@@ -60,7 +67,7 @@ const sceneReady = new Promise((resolve) => {
     const sc = window.DGLScene;
     if (!sc) return resolve(null);
     // espera as texturas (no máximo 6 s; se demorarem, segue e elas aparecem quando chegarem)
-    Promise.race([sc.ready, new Promise((ok) => setTimeout(ok, 6000))]).then(() => resolve(sc));
+    Promise.race([sc.preload(lowTex ? sc.LOW : sc.BAKED), new Promise((ok) => setTimeout(ok, 6000))]).then(() => resolve(sc));
   };
   s.onerror = () => resolve(null);
   document.head.appendChild(s);
@@ -74,37 +81,7 @@ let roofWarm = false;
 const story = $('[data-story]');
 const canvas = $('[data-canvas]');
 let roof = null;
-const isMobile = window.innerWidth < 760;
 if (reduce) story.classList.add('is-static');
-let startLvl = 0;
-// Nível inicial antes do primeiro quadro, para o aparelho fraco não engasgar até a cena se ajustar sozinha.
-function startLevel() {
-  const m = location.search.match(/qualidade=(baixa|[0-5])/);
-  if (m) return m[1] === 'baixa' ? 5 : +m[1];
-  let gpu = '';
-  try {
-    const c = document.createElement('canvas'); const gl = c.getContext('webgl2') || c.getContext('webgl');
-    if (gl) {
-      const ext = gl.getExtension('WEBGL_debug_renderer_info');
-      gpu = String(gl.getParameter(ext ? ext.UNMASKED_RENDERER_WEBGL : gl.RENDERER) || '');
-      const lose = gl.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext();
-    }
-  } catch (e) { /* sem informação: decide pelo resto */ }
-  const cores = navigator.hardwareConcurrency || 8, mem = navigator.deviceMemory || 8;
-  const save = navigator.connection && navigator.connection.saveData;
-  if (save || /SwiftShader|llvmpipe|softpipe|Software|Microsoft Basic/i.test(gpu)) return 5;
-  if (isMobile) {
-    // celular: os de entrada começam no 4; só os mais fortes (iPhone, Adreno 6xx em diante com 6 GB ou mais) no 2
-    if (cores <= 4 || mem <= 3 || /Mali-(4|T|G[3-5]\d)|Adreno \(TM\) [1-5]\d\d|PowerVR|IMG/i.test(gpu)) return 4;
-    if (/Apple/i.test(gpu) || (/Adreno \(TM\) [6-9]\d\d/i.test(gpu) && mem >= 6 && cores >= 8)) return 2;
-    return 3;
-  }
-  if (cores <= 2 || mem <= 2) return 4;
-  if (/Intel.*(UHD|HD Graphics)|Radeon\(TM\) (R\d|Vega [3-8]\b)|Mali|Adreno/i.test(gpu)) return 3;
-  if (cores <= 4 || mem <= 4 || /Intel|Radeon\(TM\) (Graphics|Vega)/i.test(gpu)) return 2;
-  if (/NVIDIA|GeForce|RTX|Radeon (RX|Pro)|Apple M/i.test(gpu)) return 0;
-  return 1;
-}
 // ?fps: mostra quadros por segundo e o nível em uso, para testar em aparelhos de verdade
 function makeHud() {
   const d = document.createElement('div');
@@ -114,27 +91,28 @@ function makeHud() {
 }
 // Do nível 2 em diante, o cabeçalho e os cartões sobre o 3D deixam de desfocar o fundo (o desfoque é refeito a cada
 // quadro da cena e pesa muito em aparelho fraco) e ficam um pouco mais opacos: a aparência é praticamente a mesma.
-function liteFx(lvl) { root.classList.toggle('fx-lite', lvl >= 2); }
+function liteFx(lvl) { root.classList.toggle('fx-lite', !LEVELS[lvl].blur); }
 function initRoof(scene) {
   if (reduce) return;
   if (!scene) { root.classList.add('no-webgl'); root.classList.remove('scene-wait'); loadFallbacks(); return; }
-  const { createRoofScene, BAKED } = scene;
+  const { createRoofScene, BAKED, LOW, useLowTextures } = scene;
   try {
-    // nível inicial pelo aparelho (0 = completo ... 4 = mais leve); ?qualidade=0 a 4 ou ?qualidade=baixa força um nível
-    startLvl = startLevel();
-    const dpr = window.devicePixelRatio || 1;
+    useLowTextures(lowTex);
+    // a grama solta nasce com o que o nível de um degrau acima usaria, para o sistema poder subir um degrau
+    const grassFrac = LEVELS[Math.max(0, startLvl - 1)].grass;
+    const quality = isMobile || startLvl >= 2 ? 'medium' : 'high';
     roof = createRoofScene(canvas, {
-      pixelRatio: Math.min(dpr, startLvl === 0 ? 1.5 : 1.25),
-      quality: isMobile || startLvl >= 2 ? 'medium' : 'high',
-      post: startLvl === 0 ? 'full' : startLvl === 1 ? 'lite' : 'none',
+      level: startLvl,
+      dprMax: window.devicePixelRatio || 1,
+      quality,
       // computador fraco: sem antisserrilhado no canvas (no celular ele custa pouco e fica ligado)
       antialias: isMobile || startLvl < 3,
       debug: /[?&]debug\b/.test(location.search),
       // nos níveis leves a grama solta já nasce com a quantidade que vai ser usada (menos trabalho para abrir)
-      grass: startLvl >= 5 ? 0 : startLvl === 4 ? 3000 : startLvl === 3 ? 6000 : undefined,
-      baked: BAKED
+      grass: Math.round((quality === 'high' ? 40000 : 12000) * grassFrac),
+      baked: lowTex ? LOW : BAKED,
+      anisotropy: lowTex ? 4 : 8
     });
-    if (startLvl > 2) roof.setLevel(startLvl);
     liteFx(roof.getLevel());
     roof.state.build = 0;
   } catch (err) {
@@ -164,25 +142,33 @@ function initRoof(scene) {
 
   // Parado (sem rolar nem mexer o mouse), só a órbita lenta e o vento se mexem: abaixo do nível completo,
   // a cena desenha 30 quadros por segundo nesse tempo, sem diferença visível e com metade do trabalho.
-  // Rolando, volta na hora para a taxa cheia. No nível 4 fica sempre em 30, estável em vez de oscilar.
+  // Rolando, volta na hora para a taxa cheia. Na faixa baixa fica sempre em 30, estável em vez de oscilar.
   let lastInput = 0;
   const poke = () => { lastInput = performance.now(); };
   window.addEventListener('scroll', poke, { passive: true });
   if (fine) window.addEventListener('pointermove', poke, { passive: true });
   window.addEventListener('touchmove', poke, { passive: true });
 
-  // Qualidade adaptativa: mede o intervalo entre quadros desenhados (no ritmo cheio e também no de 30).
-  // A cada 40 quadros, se mais da metade ficou abaixo de 30 por segundo no ritmo cheio (ou abaixo de 25 no de 30),
-  // desce um nível; se ficou abaixo de 20, desce dois.
-  let frames = 0, slow = 0, verySlow = 0, lastDraw = 0;
+  // Qualidade adaptativa em tempo real (quality.js): desce rápido se os quadros passam do tempo, sobe devagar
+  // quando sobra folga durante a rolagem. A subida nunca cria o pós-processamento num aparelho que começou sem ele
+  // (criar compila shaders pesados e daria uma pausa justamente ao rolar).
+  let lastDraw = 0;
+  const monitor = createMonitor({
+    start: startLvl,
+    minUp: det.forced ? startLvl : (startLvl <= 1 ? 0 : 2),
+    getLevel: () => roof.getLevel(),
+    setLevel: (n) => { const l = roof.setLevel(n); liteFx(l); return l; }
+  });
   const hud = /[?&]fps\b/.test(location.search) ? makeHud() : null;
   let hudN = 0, hudT = performance.now();
   gsap.ticker.add((time, deltaMs) => {
-    if (!visible || !roofWarm) { lastDraw = 0; return; }
+    // fora da tela ou com a aba em segundo plano: não desenha nada
+    if (!visible || !roofWarm || document.hidden) { lastDraw = 0; return; }
     const now = performance.now();
     const lvl = roof.getLevel();
     const busy = now - lastInput < 700 || (buildIntro && buildIntro.isActive());
-    const cap30 = lvl >= 4 || (lvl >= 1 && !busy);
+    if (!det.forced) monitor.tick(now, busy);
+    const cap30 = tierOf(lvl) === 'baixa' || (lvl >= 1 && !busy);
     if (cap30 && now - lastDraw < 31) return;
     const gap = lastDraw ? now - lastDraw : 0;
     const dt = gap ? Math.min(gap, 50) : deltaMs;
@@ -192,15 +178,8 @@ function initRoof(scene) {
     roof.state.orbit = Math.sin(time * 0.12) * 0.35;
     roof.render(dt / 1000);
     if (root.classList.contains('scene-wait')) root.classList.remove('scene-wait');
-    if (hud) { hudN++; if (now - hudT > 500) { hud.textContent = Math.round(hudN * 1000 / (now - hudT)) + ' qps · nível ' + lvl; hudN = 0; hudT = now; } }
-    // ignora a volta depois de uma pausa (aba escondida, cena fora da tela)
-    if (gap && gap < 1000) {
-      frames++; if (gap > (cap30 ? 40 : 34)) slow++; if (gap > 50) verySlow++;
-      if (frames === 40) {
-        if (lvl < 5 && slow > 20) { roof.setLevel(lvl + (verySlow > 20 ? 2 : 1)); liteFx(roof.getLevel()); }
-        frames = 0; slow = 0; verySlow = 0;
-      }
-    }
+    if (hud) { hudN++; if (now - hudT > 500) { hud.textContent = Math.round(hudN * 1000 / (now - hudT)) + ' qps · nível ' + lvl + ' (' + tierOf(lvl) + ')'; hudN = 0; hudT = now; } }
+    if (!det.forced) monitor.frame(now, gap, cap30);
   });
 }
 

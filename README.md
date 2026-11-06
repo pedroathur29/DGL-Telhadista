@@ -10,9 +10,9 @@ Site de uma página, estático e feito do zero, sem framework e sem servidor.
 - **Orçamento**: o formulário só monta a mensagem e abre o WhatsApp. Nenhum dado é guardado ou enviado pelo site, e a mensagem só chega à DGL quando a pessoa toca em enviar no WhatsApp.
 - **Acessibilidade**: HTML semântico, link para pular ao conteúdo, foco visível, erros do formulário ligados a cada campo e anunciados, menu com foco preso e Esc. Com `prefers-reduced-motion` o site vira uma versão estática.
 - **Desempenho**: o 3D carrega depois da página, com uma imagem de reserva enquanto isso.
-  - **Níveis:** 0 completo; 1 efeitos com a oclusão em meia resolução; 2 sem efeitos (celular); 3 resolução 1x, sombra menor e metade da grama; 4 resolução 0,75x, um quarto da grama e sombra com filtro simples (do 3 em diante, com as telhas em movimento a sombra é refeita a cada 3 quadros); 5 resolução 0,6x, sem grama solta e sombra 512. Do nível 2 em diante o cabeçalho e os cartões sobre o 3D não desfocam o fundo. O céu é desenhado uma vez num cubo e vira o fundo. Os shaders são preparados antes do primeiro quadro sem travar a página (a imagem de reserva fica até lá), e a grama dos níveis leves já nasce no tamanho usado. O telhado, a casa e as animações são os mesmos em todos.
-  - **Nível inicial:** escolhido antes do primeiro quadro pela placa de vídeo, núcleos, memória e modo de economia de dados. Depois, a cada 40 quadros, se mais da metade ficar abaixo de 30 por segundo (ou de 25, no ritmo de 30), a cena desce um nível sozinha; abaixo de 20, desce dois.
-  - **Parado:** sem rolar nem mexer o mouse, abaixo do nível 0 a cena desenha 30 quadros por segundo; ao rolar, volta à taxa cheia. Nos níveis 4 e 5 fica sempre em 30.
+  - **Qualidade adaptativa (`js/src/quality.js`):** um só lugar com a tabela de níveis, a detecção do aparelho e o ajuste em tempo real. Três faixas, com dois degraus cada: **alta** (0 completo; 1 efeitos com a oclusão em meia resolução), **média** (2 sem pós-processamento; 3 resolução 1x, sombra 1024 e metade da grama) e **baixa** (4 texturas leves, resolução 0,75x, um quarto da grama e sombra com filtro simples; 5 resolução 0,6x, sem grama solta e sombra 512). Do 3 em diante, com as telhas em movimento a sombra é refeita a cada 3 quadros; da média em diante o cabeçalho e os cartões sobre o 3D não desfocam o fundo. O céu é desenhado uma vez num cubo e vira o fundo, e os shaders são preparados antes do primeiro quadro sem travar a página. O telhado, a casa, as árvores e as animações são os mesmos em todos.
+  - **Detecção e ajuste:** antes de baixar a cena, uma pontuação soma núcleos, memória, recursos do WebGL (versão, tamanho máximo de textura), classe da placa, pixels da tela e se é celular (sem dado, vale zero); placa emulada ou economia de dados vão direto para o 5, e no celular o mínimo é o 2. A faixa baixa já baixa as texturas leves (metade da resolução, ~70% menos dados). Em uso, desce rápido se mais da metade de 40 quadros ficar abaixo de 30 por segundo (dois degraus se abaixo de 20); sobe um degrau por vez só depois de 3 períodos seguidos de rolagem com folga e 8 s sem troca, sem criar o pós-processamento num aparelho que começou sem ele. O degrau que subiu fica 15 s em teste: se cair abaixo de ~50 quadros por segundo, volta e fica bloqueado; depois de dois bloqueios, não sobe mais.
+  - **Parado e fora da tela:** sem rolar nem mexer o mouse, abaixo do nível 0 a cena desenha 30 quadros por segundo; na faixa baixa fica sempre em 30. Fora da tela ou com a aba em segundo plano, não desenha. Com `prefers-reduced-motion`, o 3D não é carregado e ficam as imagens.
   - **Cena:** as matrizes da cena são calculadas uma vez, e não a cada quadro. As telhas só recalculam o que mudou: a posição na montagem e na manutenção, e a cor na reforma. A sombra não é refeita quando só a cor muda. As árvores ao longe são instâncias.
   - **Página:** as faixas que correm e as animações em CSS que repetem sem parar ficam paradas fora da tela.
 
@@ -47,8 +47,8 @@ Para testar localmente, sirva a pasta por HTTP, por exemplo com `python3 -m http
 
 Opções na URL para testes:
 - `?sem3d`: sem a cena 3D
-- `?qualidade=0` a `?qualidade=5`: força um nível da cena (0 completo, 5 mais leve); `?qualidade=baixa` é o nível 5
-- `?fps`: mostra quadros por segundo e o nível em uso
+- `?qualidade=alta`, `media` ou `baixa` (níveis 0, 2 e 4), ou `?qualidade=0` a `5`: força um nível e desliga o ajuste automático
+- `?fps`: mostra quadros por segundo, o nível e a faixa em uso
 - `?animar`: animações mesmo com movimento reduzido no sistema
 - `?debug`: expõe a cena no console
 
