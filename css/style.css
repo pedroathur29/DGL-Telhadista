@@ -13,7 +13,7 @@
   --areia: #ece8e1;
   --telha: #d91010; /* vermelho da logo, um pouco fechado para o texto branco passar no contraste (5,2:1) */
   --telha-vivo: #fa1b1b; /* vermelho exato da logo: só em detalhes grandes */
-  --brasa: #ff7a70; /* vermelho claro: destaques sobre o azul-marinho */
+  --brasa: #ff3b3b; /* vermelho dos destaques sobre o azul-marinho (4,9:1 no fundo, passa para texto pequeno) */
   --ouro: #a9b3c2; /* azul claro (nome mantido para não quebrar o resto do código) */
   --azul: #0b1424; /* azul bem escuro: rodapé */
   --ink: #0f1a2c;
