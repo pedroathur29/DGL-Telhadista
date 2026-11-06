@@ -50,18 +50,30 @@ $$('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
 /* ---------- cena 3D: o arquivo pesado (three.js e texturas) carrega depois da página ---------- */
 const want3D = !reduce && !/sem3d/.test(location.search);
 const isMobile = window.innerWidth < 760;
-// faixa de qualidade escolhida antes de baixar a cena, para o aparelho fraco já baixar as texturas leves
-// (quality.js; ?qualidade=alta, media, baixa ou 0 a 5 força um nível)
-const det = want3D ? detect({ mobile: isMobile || matchMedia('(pointer: coarse)').matches }) : { level: MAX };
-const startLvl = det.level;
-const lowTex = LEVELS[startLvl].textures === 'low';
-const sceneReady = new Promise((resolve) => {
-  if (!want3D) return resolve(null);
-  if (window.DGLScene) return resolve(window.DGLScene);
+// faixa de qualidade (quality.js; ?qualidade=alta, media, baixa ou 0 a 5 força um nível). A detecção cria um
+// contexto WebGL de teste, que custa um instante: por isso roda depois da abertura, antes de baixar as texturas,
+// para o aparelho fraco já baixar as leves.
+let det = { level: MAX }, startLvl = MAX, lowTex = true;
+const runDetect = () => {
+  det = detect({ mobile: isMobile || matchMedia('(pointer: coarse)').matches });
+  startLvl = det.level; lowTex = LEVELS[startLvl].textures === 'low';
+};
+// O arquivo da cena começa a baixar já (preload, sem executar), mas só é executado e montado depois da abertura:
+// montar a cena ocupa o processador por um instante e, se acontecesse junto da cortina, a animação travava.
+const sceneSrc = (() => { const me = document.querySelector('script[src*="js/app.js"]'); return me ? me.getAttribute('src').replace('app.js', 'scene.js') : 'js/scene.js'; })();
+if (want3D && !window.DGLScene) {
   root.classList.add('scene-wait');
-  const me = document.querySelector('script[src*="js/app.js"]');
+  const pre = document.createElement('link'); pre.rel = 'preload'; pre.as = 'script'; pre.href = sceneSrc;
+  document.head.appendChild(pre);
+}
+let startScene;
+const sceneGo = new Promise((go) => { startScene = go; });
+const sceneReady = sceneGo.then(() => new Promise((resolve) => {
+  if (!want3D) return resolve(null);
+  runDetect();
+  if (window.DGLScene) return resolve(window.DGLScene);
   const s = document.createElement('script');
-  s.src = me ? me.getAttribute('src').replace('app.js', 'scene.js') : 'js/scene.js';
+  s.src = sceneSrc;
   s.async = true;
   s.onload = () => {
     const sc = window.DGLScene;
@@ -71,7 +83,7 @@ const sceneReady = new Promise((resolve) => {
   };
   s.onerror = () => resolve(null);
   document.head.appendChild(s);
-});
+}));
 // imagens de reserva da história: só baixam se o 3D não for usado
 const loadFallbacks = () => $$('[data-fb][data-src]').forEach((img) => { img.srcset = img.dataset.srcset; img.src = img.dataset.src; img.removeAttribute('data-src'); });
 let introDone = false;
@@ -213,16 +225,23 @@ function runLoader() {
   const tiles = $$('.loader__tiles img, .loader__tiles svg');
   // abertura curta: a logo entra e a cortina sobe; sem porcentagem fictícia (o 3D carrega por trás, no seu tempo)
   const tl = gsap.timeline();
-  tl.to(tiles, { y: 0, scale: 1, opacity: 1, duration: 0.45, ease: 'power3.out' }, 0)
-    .to(loader, { yPercent: -100, duration: 0.7, ease: 'expo.inOut' }, 0.55)
-    .add(intro, 0.8)
+  tl.to(tiles, { y: 0, scale: 1, opacity: 1, duration: 0.4, ease: 'power3.out' }, 0)
+    .to(loader, { yPercent: -100, duration: 0.65, ease: 'expo.inOut' }, 0.45)
+    .add(intro, 0.65)
     .add(() => loader.remove());
 }
-const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]) : Promise.resolve();
+// as fontes vêm do próprio site e chegam rápido; a espera máxima é curta para a logo não ficar parada na tela
+const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 700))]) : Promise.resolve();
 fontsReady.then(() => {
   runLoader();
-  // a cena 3D é montada logo depois que a tela de carregamento aparece
-  setTimeout(() => sceneReady.then((scene) => { initRoof(scene); setupStory(); ScrollTrigger.refresh(); }), 120);
+  // a cena 3D só é montada quando a cortina e o título já terminaram de entrar (cerca de 2 s); até lá aparece
+  // a imagem de reserva no fundo. Sem a abertura (movimento reduzido), começa na hora.
+  const delay = reduce || !loader ? 0 : 2100;
+  setTimeout(() => {
+    const go = () => startScene();
+    if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 600 }); else go();
+  }, delay);
+  sceneReady.then((scene) => { initRoof(scene); setupStory(); ScrollTrigger.refresh(); });
 });
 
 /* ---------- a história: o telhado em 3D conta os serviços ---------- */
