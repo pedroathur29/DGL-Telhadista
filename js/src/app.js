@@ -63,14 +63,16 @@ const runDetect = () => {
 const sceneSrc = (() => { const me = document.querySelector('script[src*="js/app.js"]'); return me ? me.getAttribute('src').replace('app.js', 'scene.js') : 'js/scene.js'; })();
 if (want3D && !window.DGLScene) {
   root.classList.add('scene-wait');
-  const pre = document.createElement('link'); pre.rel = 'preload'; pre.as = 'script'; pre.href = sceneSrc;
-  document.head.appendChild(pre);
+  // prioridade baixa e só depois do carregamento da página: não disputa banda com a imagem e o texto do topo
+  const addPre = () => { const pre = document.createElement('link'); pre.rel = 'preload'; pre.as = 'script'; pre.href = sceneSrc; pre.fetchPriority = 'low'; document.head.appendChild(pre); };
+  if (document.readyState === 'complete') addPre(); else window.addEventListener('load', addPre, { once: true });
 }
 let startScene;
 const sceneGo = new Promise((go) => { startScene = go; });
 const sceneReady = sceneGo.then(() => new Promise((resolve) => {
   if (!want3D) return resolve(null);
   runDetect();
+  if (det.software || det.noGL) return resolve(null);
   if (window.DGLScene) return resolve(window.DGLScene);
   const s = document.createElement('script');
   s.src = sceneSrc;

@@ -45,9 +45,13 @@ export function detect({ mobile }) {
     } else return { level: MAX, score: null, info, noGL: true };
   } catch (e) { /* sem WebGL detalhado: segue com o resto */ }
 
+  // sem placa de vídeo (o navegador desenha pelo processador, a 1 a 3 quadros por segundo): o site mostra as imagens
+  // da casa no lugar do 3D, como quando não há WebGL. Acontece em máquinas virtuais, PCs sem driver e nos testes
+  // automáticos de velocidade (PageSpeed). Com ?qualidade=..., o 3D roda mesmo assim (para testes).
+  if (/SwiftShader|llvmpipe|softpipe|Software|Microsoft Basic/i.test(info.gpu)) return { level: MAX, score: null, info, software: true };
+  // economia de dados ligada: o mais leve
   const save = navigator.connection && navigator.connection.saveData;
-  // placa de vídeo emulada pelo processador, ou economia de dados ligada: mais leve direto
-  if (save || /SwiftShader|llvmpipe|softpipe|Software|Microsoft Basic/i.test(info.gpu)) return { level: MAX, score: null, info };
+  if (save) return { level: MAX, score: null, info };
 
   const g = info.gpu;
   let s = 0;

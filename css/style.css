@@ -340,7 +340,8 @@ html:not(.js) .loader { display: none; }
 @media (min-width: 56em) { .about__inner { grid-template-columns: 5fr 7fr; gap: clamp(40px, 6vw, 96px); align-items: start; } }
 .diff { background: var(--areia); color: var(--ink); padding: clamp(90px, 12vw, 200px) 0; position: relative; z-index: 2; }
 .diff__statement { font-size: clamp(1.8rem, 1rem + 3vw, 4.2rem); line-height: 1.02; letter-spacing: -0.045em; max-width: 18ch; font-weight: 750; }
-.diff__statement .word { display: inline-block; opacity: 0.16; transition: none; }
+/* as palavras começam a meia-luz (contraste 3,2:1, legível) e acendem ao rolar */
+.diff__statement .word { display: inline-block; opacity: 0.5; transition: none; }
 .diff__grid { margin-top: clamp(56px, 8vw, 130px); display: grid; gap: clamp(28px, 4vw, 56px); }
 .feature { position: relative; }
 .feature__media::after, .value figure::after, .card__media::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(15, 26, 44, 0.1); }
