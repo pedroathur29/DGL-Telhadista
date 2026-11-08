@@ -1,0 +1,32 @@
+/* Páginas de texto (privacidade e termos): mesma identidade do site, leitura confortável */
+@font-face { font-family: 'Archivo'; src: url('../assets/fonts/archivo-latin-wght-normal.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+:root { --ink: #0f1a2c; --noite: #0f1a2c; --areia: #ece8e1; --red: #d91010; --muted: #4a5568; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; font-family: 'Archivo', system-ui, sans-serif; color: var(--ink); background: #f6f3ee; line-height: 1.65; font-size: 17px; }
+a { color: var(--red); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -9999px; top: 8px; background: #fff; padding: 10px 14px; border-radius: 8px; z-index: 10; }
+.skip:focus { left: 12px; }
+header { background: var(--noite); color: var(--areia); }
+header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; padding-bottom: 16px; }
+header a { color: var(--areia); text-decoration: none; display: inline-flex; align-items: center; gap: 12px; font-weight: 500; }
+header img { background: #fff; border-radius: 10px; padding: 6px 10px; height: 40px; width: auto; }
+header b { font-weight: 800; }
+header .back { font-size: 15px; opacity: .85; text-decoration: underline; }
+.wrap { max-width: 760px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
+main { padding: 48px 0 72px; }
+h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1.05; letter-spacing: -.04em; margin: 0 0 8px; }
+.upd { color: var(--muted); margin: 0 0 32px; font-size: 15px; }
+h2 { font-size: 22px; letter-spacing: -.02em; margin: 40px 0 8px; line-height: 1.25; }
+p, li { color: #1f2937; }
+ul { padding-left: 22px; }
+li { margin: 6px 0; }
+.box { background: #fff; border: 1px solid #e3ddd3; border-radius: 16px; padding: 18px 20px; margin: 20px 0; }
+.box p { margin: 0; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 12px 0; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #e3ddd3; vertical-align: top; }
+th { font-weight: 700; }
+footer { background: var(--noite); color: var(--areia); padding: 28px 0; font-size: 14px; }
+footer a { color: var(--areia); }
+@media (max-width: 520px) { body { font-size: 16px; } table, thead, tbody, tr, th, td { display: block; } thead { display: none; } td { border: 0; padding: 4px 0; } tr { border-bottom: 1px solid #e3ddd3; padding: 8px 0; } }

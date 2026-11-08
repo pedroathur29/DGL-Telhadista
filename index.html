@@ -42,9 +42,9 @@
   }
   </script>
   <meta name="theme-color" content="#0f1a2c">
-  <link rel="icon" href="assets/favicon.svg?v=202611072310" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon.svg?v=202611081200" type="image/svg+xml">
   <link rel="preload" as="image" href="assets/img/casa-1600.webp" imagesrcset="assets/img/casa-800.webp 800w, assets/img/casa-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
-  <link rel="stylesheet" href="css/style.css?v=202611072310">
+  <link rel="stylesheet" href="css/style.css?v=202611081200">
   <script>
     /* Só com JavaScript a página entra no modo animado e trava a rolagem durante a abertura.
        Se o js/app.js não carregar ou não rodar em 8 s, a página volta para a versão estática e navegável. */
@@ -72,7 +72,7 @@
   <!-- carregamento: as telhas sendo assentadas -->
   <div class="loader" aria-hidden="true" data-loader>
     <div class="loader__tiles">
-      <img class="loader__logo" src="assets/logo.svg?v=202611072310" width="964" height="348" alt="">
+      <img class="loader__logo" src="assets/logo.svg?v=202611081200" width="964" height="348" alt="">
     </div>
   </div>
 
@@ -82,7 +82,7 @@
 
   <header class="header" data-header>
     <a class="brand" href="#topo" translate="no" aria-label="DGL Telhadista, voltar ao início" data-magnetic>
-      <span class="brand__mark" aria-hidden="true"><img src="assets/logo.svg?v=202611072310" width="964" height="348" alt=""></span>
+      <span class="brand__mark" aria-hidden="true"><img src="assets/logo.svg?v=202611081200" width="964" height="348" alt=""></span>
       <span class="brand__name"><b>DGL</b> Telhadista</span>
     </a>
     <nav class="nav" aria-label="Principal">
@@ -388,8 +388,8 @@
               <p class="field__err" id="e-nome" aria-live="polite"></p>
             </div>
             <div class="field">
-              <input id="f-tel" name="telefone" type="tel" inputmode="tel" autocomplete="tel" placeholder=" " required aria-describedby="e-tel">
-              <label for="f-tel">Telefone ou WhatsApp</label>
+              <input id="f-tel" name="telefone" type="tel" inputmode="tel" autocomplete="tel" placeholder=" " aria-describedby="e-tel">
+              <label for="f-tel">Telefone para contato (opcional)</label>
               <p class="field__err" id="e-tel" aria-live="polite"></p>
             </div>
             <div class="field">
@@ -417,18 +417,22 @@
               <label for="f-msg">Conte o que está acontecendo (opcional)</label>
               <p class="field__hint" id="d-msg">Ex.: goteira na sala, telhado de 20 anos, quero cobrir a garagem.</p>
             </div>
+            <div class="consent">
+              <label class="check"><input id="f-aceite" name="aceite" type="checkbox" required aria-describedby="e-aceite"><span>Li e aceito a <a class="ulink" href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a> e os <a class="ulink" href="termos.html" target="_blank" rel="noopener">Termos de Uso</a>.</span></label>
+              <p class="field__err" id="e-aceite" aria-live="polite"></p>
+            </div>
             <button class="btn btn--wa btn--block" type="submit" data-magnetic><svg class="btn__icon" aria-hidden="true"><use href="#i-wa"/></svg><span class="btn__text">Enviar pelo WhatsApp</span></button>
             <p class="form__ok" role="status" data-ok></p>
-            <p class="form__privacy">Seus dados servem só para montar a mensagem no WhatsApp da DGL. O site não guarda nem envia essas informações para nenhum outro lugar.</p>
+            <p class="form__privacy">Seus dados servem só para montar a mensagem no WhatsApp da DGL. O site não guarda nem envia essas informações para nenhum outro lugar. <a class="ulink" href="privacidade.html">Saiba mais</a>.</p>
           </form>
         </div>
 
         <div class="phone" aria-label="Prévia da mensagem que será enviada" data-reveal>
           <p class="phone__label">Prévia da sua mensagem (exemplo)</p>
-          <div class="phone__bar"><span class="phone__avatar" aria-hidden="true"><img src="assets/favicon.svg?v=202611072310" width="40" height="40" alt=""></span><span><b>DGL Telhadista</b><small>Responde pelo WhatsApp</small></span></div>
+          <div class="phone__bar"><span class="phone__avatar" aria-hidden="true"><img src="assets/favicon.svg?v=202611081200" width="40" height="40" alt=""></span><span><b>DGL Telhadista</b><small>Responde pelo WhatsApp</small></span></div>
           <div class="phone__chat">
             <p class="bubble bubble--in">Olá! Aqui é a DGL Telhadista. Como podemos ajudar?</p>
-            <p class="bubble bubble--out" data-preview>Olá, DGL! Meu nome é <b data-out="nome">…</b>. Preciso de <b data-out="servico">um serviço</b> para <b data-out="perfil">a minha residência</b>, em <b data-out="cidade">…</b>. Meu telefone é <b data-out="telefone">…</b>.</p>
+            <p class="bubble bubble--out" data-preview>Olá, DGL! Meu nome é <b data-out="nome">…</b>. Preciso de <b data-out="servico">um serviço</b> para <b data-out="perfil">a minha residência</b>, em <b data-out="cidade">…</b>.<span data-tel-part hidden> Meu telefone é <b data-out="telefone">…</b>.</span></p>
             <p class="bubble bubble--typing" aria-hidden="true" data-typing><i></i><i></i><i></i></p>
           </div>
         </div>
@@ -440,7 +444,7 @@
     <div class="wrap">
       <div class="footer__top">
         <div class="footer__brand">
-          <p class="footer__logo"><img src="assets/logo.svg?v=202611072310" width="964" height="348" alt="Logo da DGL Telhadista"></p>
+          <p class="footer__logo"><img src="assets/logo.svg?v=202611081200" width="964" height="348" alt="Logo da DGL Telhadista"></p>
           <p class="footer__name" translate="no">DGL Telhadista<small>Serviços gerais em telhados</small></p>
         </div>
         <div class="footer__big">
@@ -471,7 +475,7 @@
         </div>
       </div>
       <div class="footer__last">
-        <p><span translate="no">DGL Telhadista e Serviços Gerais</span> · CNPJ 32.770.448/0001-91 · © 2026 · Fotos de obras da DGL; ilustrações 3D criadas para o site</p>
+        <p><span translate="no">DGL Telhadista e Serviços Gerais</span> · CNPJ 32.770.448/0001-91 · © 2026 · Fotos de obras da DGL; ilustrações 3D criadas para o site · <a href="privacidade.html">Política de Privacidade</a> · <a href="termos.html">Termos de Uso</a></p>
         <a class="totop" href="#topo" data-magnetic>Voltar ao topo <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
     </div>
@@ -482,6 +486,6 @@
   </aside>
 
   <button class="motion-toggle" type="button" data-motion-toggle hidden></button>
-  <script src="js/app.js?v=202611072310" defer></script>
+  <script src="js/app.js?v=202611081200" defer></script>
 </body>
 </html>

@@ -554,3 +554,11 @@ html:not(.js) .burger { display: none; }
 html:not(.js) .form { display: none; }
 .quote__nojs { display: none; margin-bottom: 24px; color: var(--light-soft); }
 html:not(.js) .quote__nojs { display: block; }
+
+/* aceite da política e dos termos */
+.consent { margin-top: 4px; }
+.consent.is-invalid .field__err { max-height: 60px; opacity: 1; transform: none; margin-top: 8px; }
+.check { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; font-size: var(--fs-small); color: var(--light-soft); line-height: 1.5; }
+.check input { flex: none; width: 22px; height: 22px; margin: 1px 0 0; accent-color: #d91010; cursor: pointer; }
+.check input:focus-visible { outline: 3px solid var(--brasa); outline-offset: 3px; }
+.consent.is-invalid .check input { outline: 2px solid #ff9e7e; outline-offset: 2px; }
