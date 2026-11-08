@@ -58,19 +58,17 @@ const runDetect = () => {
   det = detect({ mobile: isMobile || matchMedia('(pointer: coarse)').matches });
   startLvl = det.level; lowTex = LEVELS[startLvl].textures === 'low';
 };
-// O arquivo da cena começa a baixar já (preload, sem executar), mas só é executado e montado depois da abertura:
-// montar a cena ocupa o processador por um instante e, se acontecesse junto da cortina, a animação travava.
+// A cena 3D começa a baixar e a montar assim que a página abre. A tela da logo fica até o primeiro quadro do 3D
+// estar desenhado (com um limite de tempo): quando a cortina sobe, a animação já está na tela, sem imagem no lugar.
 const sceneSrc = (() => { const me = document.querySelector('script[src*="js/app.js"]'); return me ? me.getAttribute('src').replace('app.js', 'scene.js') : 'js/scene.js'; })();
 if (want3D && !window.DGLScene) {
   root.classList.add('scene-wait');
-  // começa assim que a imagem da casa do topo chega (ela aparece no lugar do 3D enquanto ele carrega),
-  // para não disputar banda com ela; prioridade baixa
-  let pre = null;
-  const addPre = () => { if (pre) return; pre = document.createElement('link'); pre.rel = 'preload'; pre.as = 'script'; pre.href = sceneSrc; pre.fetchPriority = 'low'; document.head.appendChild(pre); };
-  const heroImg = document.querySelector('[data-fb="hero"]');
-  if (!heroImg || heroImg.complete) addPre();
-  else { heroImg.addEventListener('load', addPre, { once: true }); heroImg.addEventListener('error', addPre, { once: true }); window.addEventListener('load', addPre, { once: true }); }
+  const pre = document.createElement('link'); pre.rel = 'preload'; pre.as = 'script'; pre.href = sceneSrc; pre.fetchPriority = 'high';
+  document.head.appendChild(pre);
 }
+// resolve quando o primeiro quadro do 3D foi desenhado, ou quando o site decide usar as imagens (sem WebGL/placa)
+let sceneShownResolve;
+const sceneShown = new Promise((r) => { sceneShownResolve = r; });
 let startScene;
 const sceneGo = new Promise((go) => { startScene = go; });
 const sceneReady = sceneGo.then(() => new Promise((resolve) => {
@@ -90,6 +88,7 @@ const sceneReady = sceneGo.then(() => new Promise((resolve) => {
   s.onerror = () => resolve(null);
   document.head.appendChild(s);
 }));
+startScene(); // o 3D começa a baixar e montar já, por trás da tela da logo (não espera as fontes)
 // imagens de reserva da história: só baixam se o 3D não for usado
 const loadFallbacks = () => $$('[data-fb][data-src]').forEach((img) => { img.srcset = img.dataset.srcset; img.src = img.dataset.src; img.removeAttribute('data-src'); });
 let introDone = false;
@@ -112,7 +111,7 @@ function makeHud() {
 function liteFx(lvl) { root.classList.toggle('fx-lite', !LEVELS[lvl].blur); }
 function initRoof(scene) {
   if (reduce) return;
-  if (!scene) { root.classList.add('no-webgl'); root.classList.remove('scene-wait'); loadFallbacks(); return; }
+  if (!scene) { root.classList.add('no-webgl'); root.classList.remove('scene-wait'); loadFallbacks(); sceneShownResolve(); return; }
   const { createRoofScene, BAKED, LOW, useLowTextures } = scene;
   try {
     useLowTextures(lowTex);
@@ -136,7 +135,7 @@ function initRoof(scene) {
   } catch (err) {
     roof = null;
   }
-  if (!roof) { root.classList.add('no-webgl'); root.classList.remove('scene-wait'); loadFallbacks(); return; }
+  if (!roof) { root.classList.add('no-webgl'); root.classList.remove('scene-wait'); loadFallbacks(); sceneShownResolve(); return; }
   if (/[?&]debug\b/.test(location.search)) window.__dglRoof = roof;
 
   const resize = () => roof.resize(canvas.clientWidth, canvas.clientHeight);
@@ -196,7 +195,7 @@ function initRoof(scene) {
     roof.state.orbit = Math.sin(time * 0.12) * 0.35;
     roof.render(dt / 1000);
     // a cena aparece por cima da imagem da casa; a imagem só sai depois do esmaecimento (sem fundo azul no meio)
-    if (root.classList.contains('scene-wait')) { root.classList.add('scene-fade'); root.classList.remove('scene-wait'); setTimeout(() => root.classList.remove('scene-fade'), 1000); }
+    if (root.classList.contains('scene-wait')) { root.classList.add('scene-fade'); root.classList.remove('scene-wait'); setTimeout(() => root.classList.remove('scene-fade'), 1000); requestAnimationFrame(() => sceneShownResolve()); }
     if (hud) { hudN++; if (now - hudT > 500) { hud.textContent = Math.round(hudN * 1000 / (now - hudT)) + ' qps · nível ' + lvl + ' (' + tierOf(lvl) + ')'; hudN = 0; hudT = now; } }
     if (!det.forced) monitor.frame(now, gap, cap30);
   });
@@ -230,24 +229,21 @@ function runLoader() {
   splitHero();
   gsap.set('[data-hero-fade], .header', { autoAlpha: 1 });
   const tiles = $$('.loader__tiles img, .loader__tiles svg');
-  // abertura curta: a logo entra e a cortina sobe; sem porcentagem fictícia (o 3D carrega por trás, no seu tempo)
-  const tl = gsap.timeline();
-  tl.to(tiles, { y: 0, scale: 1, opacity: 1, duration: 0.4, ease: 'power3.out' }, 0)
-    .to(loader, { yPercent: -100, duration: 0.65, ease: 'expo.inOut' }, 0.45)
-    .add(intro, 0.65)
-    .add(() => loader.remove());
+  // a logo entra; a cortina só sobe quando o 3D já está desenhado (no máximo 6 s; depois disso, segue com a imagem)
+  gsap.to(tiles, { y: 0, scale: 1, opacity: 1, duration: 0.4, ease: 'power3.out' });
+  const minShow = new Promise((r) => setTimeout(r, 650));
+  const maxWait = new Promise((r) => setTimeout(r, 6000));
+  Promise.all([minShow, Promise.race([sceneShown, maxWait])]).then(() => {
+    gsap.timeline()
+      .to(loader, { yPercent: -100, duration: 0.65, ease: 'expo.inOut' }, 0)
+      .add(intro, 0.2)
+      .add(() => loader.remove());
+  });
 }
 // as fontes vêm do próprio site e chegam rápido; a espera máxima é curta para a logo não ficar parada na tela
 const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 700))]) : Promise.resolve();
 fontsReady.then(() => {
   runLoader();
-  // a cena 3D é montada quando a cortina já subiu e o título já está quase parado (1,5 s); até lá, e enquanto a
-  // cena entra, aparece no fundo a imagem da casa. Sem a abertura (movimento reduzido), começa na hora.
-  const delay = reduce || !loader ? 0 : 1500;
-  setTimeout(() => {
-    const go = () => startScene();
-    if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 600 }); else go();
-  }, delay);
   sceneReady.then((scene) => { initRoof(scene); setupStory(); ScrollTrigger.refresh(); });
 });
 
