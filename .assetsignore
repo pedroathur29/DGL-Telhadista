@@ -1,0 +1,11 @@
+# Arquivos do projeto que não fazem parte do site: a Cloudflare não publica estes
+.git
+.gitignore
+.assetsignore
+README.md
+package.json
+package-lock.json
+node_modules
+docs
+scripts
+js/src
