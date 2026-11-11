@@ -28,5 +28,6 @@ table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 12px 0;
 th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #e3ddd3; vertical-align: top; }
 th { font-weight: 700; }
 footer { background: var(--noite); color: var(--areia); padding: 28px 0; font-size: 14px; }
+footer p { color: var(--areia); }
 footer a { color: var(--areia); }
 @media (max-width: 520px) { body { font-size: 16px; } table, thead, tbody, tr, th, td { display: block; } thead { display: none; } td { border: 0; padding: 4px 0; } tr { border-bottom: 1px solid #e3ddd3; padding: 8px 0; } }
