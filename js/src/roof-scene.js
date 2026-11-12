@@ -698,7 +698,7 @@ export function createRoofScene(canvas, options = {}) {
     const L = LEVELS[n];
     if (L.post === 'none') { if (composer) dropComposer(); }
     else if (composerKind !== L.post) { if (composer) dropComposer(); composer = makeComposer(L.post === 'lite'); composerKind = L.post; }
-    renderer.setPixelRatio(Math.min(dprMax, L.dpr));
+    renderer.setPixelRatio(Math.min(dprMax, opt.dprOf ? opt.dprOf(L, n) : L.dpr));
     shadowTo(L.shadow === 'base' ? q.shadow : L.shadow);
     shadowEvery = L.shadowEvery; shadowMove = L.shadowMove;
     if (grassMesh) { grassMesh.count = Math.min(grassCap, Math.round(grassFull * L.grass)); grassMesh.visible = grassMesh.count > 0; }

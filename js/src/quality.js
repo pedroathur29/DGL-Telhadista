@@ -11,13 +11,15 @@ export const LEVELS = [
   // dpr: limite da resolução de renderização; shadow: 'base' (2048 ou 4096) ou o tamanho do mapa de sombra
   // shadowEvery: a cada quantos quadros a sombra das folhas é refeita (0 = só quando as telhas se mexem)
   // shadowMove: com as telhas em movimento, a sombra é refeita a cada N quadros
+  // dprM: o mesmo limite no celular. A tela do celular tem poucos pixels de largura, então o celular bom aguenta
+  //   desenhar perto da resolução real (imagem nítida); o fraco fica com resolução baixa para a rolagem não travar
   // grass: fração da grama solta; blur: desfoque do fundo no cabeçalho e nos cartões sobre o 3D
-  { tier: 'alta', post: 'full', dpr: 1.5, shadow: 'base', shadowEvery: 5, shadowMove: 1, grass: 1, blur: true, softShadow: true, textures: 'full' },
-  { tier: 'alta', post: 'lite', dpr: 1.25, shadow: 'base', shadowEvery: 5, shadowMove: 1, grass: 1, blur: true, softShadow: true, textures: 'full' },
-  { tier: 'média', post: 'none', dpr: 1.25, shadow: 'base', shadowEvery: 5, shadowMove: 1, grass: 1, blur: false, softShadow: true, textures: 'full' },
-  { tier: 'média', post: 'none', dpr: 1, shadow: 1024, shadowEvery: 0, shadowMove: 3, grass: 0.5, blur: false, softShadow: true, textures: 'full' },
-  { tier: 'baixa', post: 'none', dpr: 0.75, shadow: 1024, shadowEvery: 0, shadowMove: 3, grass: 0.25, blur: false, softShadow: false, textures: 'low' },
-  { tier: 'baixa', post: 'none', dpr: 0.6, shadow: 512, shadowEvery: 0, shadowMove: 3, grass: 0, blur: false, softShadow: false, textures: 'low' }
+  { tier: 'alta', post: 'full', dpr: 1.5, dprM: 2, shadow: 'base', shadowEvery: 5, shadowMove: 1, grass: 1, blur: true, softShadow: true, textures: 'full' },
+  { tier: 'alta', post: 'lite', dpr: 1.25, dprM: 2, shadow: 'base', shadowEvery: 5, shadowMove: 1, grass: 1, blur: true, softShadow: true, textures: 'full' },
+  { tier: 'média', post: 'none', dpr: 1.25, dprM: 1.75, shadow: 'base', shadowEvery: 5, shadowMove: 1, grass: 1, blur: false, softShadow: true, textures: 'full' },
+  { tier: 'média', post: 'none', dpr: 1, dprM: 1.25, shadow: 1024, shadowEvery: 0, shadowMove: 3, grass: 0.5, blur: false, softShadow: true, textures: 'full' },
+  { tier: 'baixa', post: 'none', dpr: 0.75, dprM: 0.85, shadow: 1024, shadowEvery: 0, shadowMove: 3, grass: 0.25, blur: false, softShadow: false, textures: 'low' },
+  { tier: 'baixa', post: 'none', dpr: 0.6, dprM: 0.6, shadow: 512, shadowEvery: 0, shadowMove: 3, grass: 0, blur: false, softShadow: false, textures: 'low' }
 ];
 export const MAX = LEVELS.length - 1;
 export const tierOf = (n) => LEVELS[n].tier;
@@ -55,14 +57,18 @@ export function detect({ mobile }) {
 
   const g = info.gpu;
   let s = 0;
-  if (info.cores) s += info.cores >= 8 ? 2 : info.cores >= 6 ? 1 : info.cores <= 2 ? -2 : info.cores <= 4 ? -1 : 0;
+  // no celular, 8 núcleos não querem dizer aparelho forte (os de entrada também têm): contam só 1 ponto
+  if (info.cores) s += info.cores >= 8 ? (mobile ? 1 : 2) : info.cores >= 6 ? 1 : info.cores <= 2 ? -2 : info.cores <= 4 ? -1 : 0;
   if (info.mem) s += info.mem >= 8 ? 2 : info.mem >= 6 ? 1 : info.mem <= 2 ? -2 : info.mem <= 4 ? -1 : 0;
   if (!info.gl2) s -= 2;
   if (info.maxTex >= 16384) s += 1; else if (info.maxTex && info.maxTex <= 4096) s -= 1;
   // classe da placa (um item entre vários)
   if (/NVIDIA|GeForce|RTX|Quadro|Radeon (RX|Pro)|Apple M\d/i.test(g)) s += 3;
   else if (/Apple GPU/i.test(g)) s += 2;
-  else if (/Adreno \(TM\) [6-9]\d\d|Mali-G7\d\d|Mali-G(71|72|76|77|78)|Immortalis/i.test(g)) s += 1;
+  // celulares: placas de entrada (Adreno 600 a 613), topo de linha (Adreno 7xx em diante, Mali-G7xx, Immortalis, Xclipse)
+  else if (/Adreno \(TM\) 6(0\d|1[0-3])/i.test(g)) s -= 1;
+  else if (/Adreno \(TM\) [7-9]\d\d|Mali-G7\d\d|Immortalis|Xclipse/i.test(g)) s += 2;
+  else if (/Adreno \(TM\) 6\d\d|Mali-G6\d\d|Mali-G(71|72|76|77|78)/i.test(g)) s += 1;
   else if (/Intel.*(UHD|HD Graphics)/i.test(g)) s -= 3;
   else if (/Intel.*(Iris|Arc)/i.test(g)) s -= 1;
   else if (/Mali-(4|T|G[3-5]\d)|Adreno \(TM\) [1-5]\d\d|PowerVR|IMG/i.test(g)) s -= 2;
@@ -73,8 +79,10 @@ export function detect({ mobile }) {
   if (mobile) s -= 3;
 
   let level = s >= 5 ? 0 : s >= 3 ? 1 : s >= 1 ? 2 : s >= -1 ? 3 : s >= -4 ? 4 : 5;
+  // celular topo de linha: continua sem pós-processamento, mas desenha na resolução mais alta (ver dprM)
+  const top = !!mobile && s >= 3;
   if (mobile) level = Math.max(level, 2); // no celular, sem pós-processamento (gasta bateria e esquenta)
-  return { level, score: s, info };
+  return { level, score: s, info, top };
 }
 
 /* ---------- ajuste em tempo real ----------
@@ -82,8 +90,8 @@ export function detect({ mobile }) {
    um degrau por vez. Nos 15 s depois de subir, o degrau novo fica em teste: se a rolagem cair abaixo de ~50 quadros
    por segundo, volta ao anterior e esse degrau fica bloqueado. Depois de dois bloqueios, o sistema para de subir.
    Assim a qualidade não fica alternando. */
-export function createMonitor({ start, minUp, setLevel, getLevel }) {
-  let frames = 0, slow = 0, verySlow = 0;
+export function createMonitor({ start, minUp, setLevel, getLevel, onStall }) {
+  let frames = 0, slow = 0, verySlow = 0, stall = 0;
   let busyTicks = 0, goodTicks = 0, goodWindows = 0, lastTick = 0;
   let lastChange = performance.now(), upAt = 0, upTo = -1, probeN = 0, probeSlow = 0;
   const locked = new Set();
@@ -122,12 +130,17 @@ export function createMonitor({ start, minUp, setLevel, getLevel }) {
       frames++; if (gap > (cap30 ? 40 : 34)) slow++; if (gap > 50) verySlow++;
       if (frames < 40) return;
       const lvl = getLevel();
+      // já no nível mais leve e ainda abaixo de ~25 quadros por segundo por 4 medições seguidas: o aparelho não
+      // aguenta o 3D. Avisa a página, que troca a cena pelas imagens da casa (rolagem lisa em vez de 3D travando).
+      if (lvl === MAX && slow > 20 && now - lastChange > 1500) { if (++stall >= 4 && onStall) { stall = 0; onStall(); } }
+      else stall = 0;
       if (lvl < MAX && slow > 20 && now - lastChange > 1500) {
         if (upTo === lvl && now - upAt < 15000) locked.add(lvl);
         change(lvl + (verySlow > 20 ? 2 : 1), now);
       }
       frames = slow = verySlow = 0;
     },
-    start
+    start,
+    stallNow() { if (onStall) onStall(); } // para testes (?debug)
   };
 }

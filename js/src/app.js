@@ -121,6 +121,8 @@ function initRoof(scene) {
     roof = createRoofScene(canvas, {
       level: startLvl,
       dprMax: window.devicePixelRatio || 1,
+      // celular: tabela própria de resolução (quality.js, dprM); o topo de linha desenha em 2x já no nível 2
+      dprOf: isMobile ? (L, n) => (det.top && n === 2 ? 2 : L.dprM) : null,
       quality,
       // computador fraco: sem antisserrilhado no canvas (no celular ele custa pouco e fica ligado)
       antialias: isMobile || startLvl < 3,
@@ -169,18 +171,26 @@ function initRoof(scene) {
   // Qualidade adaptativa em tempo real (quality.js): desce rápido se os quadros passam do tempo, sobe devagar
   // quando sobra folga durante a rolagem. A subida nunca cria o pós-processamento num aparelho que começou sem ele
   // (criar compila shaders pesados e daria uma pausa justamente ao rolar).
-  let lastDraw = 0;
+  let lastDraw = 0, dead = false;
   const monitor = createMonitor({
     start: startLvl,
     minUp: det.forced ? startLvl : (startLvl <= 1 ? 0 : 2),
     getLevel: () => roof.getLevel(),
-    setLevel: (n) => { const l = roof.setLevel(n); liteFx(l); return l; }
+    setLevel: (n) => { const l = roof.setLevel(n); liteFx(l); return l; },
+    // nem o nível mais leve roda liso: sai o 3D e entram as imagens da casa (o mesmo caminho de quem não tem WebGL)
+    onStall: () => {
+      dead = true;
+      root.classList.add('no-webgl', 'fx-lite'); root.classList.remove('scene-wait', 'scene-fade');
+      loadFallbacks(); sceneShownResolve();
+      try { roof.renderer.dispose(); roof.renderer.forceContextLoss(); } catch (e) { /* já perdido */ }
+    }
   });
   const hud = /[?&]fps\b/.test(location.search) ? makeHud() : null;
+  if (/[?&]debug\b/.test(location.search)) window.__dglMonitor = monitor;
   let hudN = 0, hudT = performance.now();
   gsap.ticker.add((time, deltaMs) => {
     // fora da tela ou com a aba em segundo plano: não desenha nada
-    if (!visible || !roofWarm || document.hidden) { lastDraw = 0; return; }
+    if (dead || !visible || !roofWarm || document.hidden) { lastDraw = 0; return; }
     const now = performance.now();
     const lvl = roof.getLevel();
     const busy = now - lastInput < 700 || (buildIntro && buildIntro.isActive());
@@ -196,7 +206,7 @@ function initRoof(scene) {
     roof.render(dt / 1000);
     // a cena aparece por cima da imagem da casa; a imagem só sai depois do esmaecimento (sem fundo azul no meio)
     if (root.classList.contains('scene-wait')) { root.classList.add('scene-fade'); root.classList.remove('scene-wait'); setTimeout(() => root.classList.remove('scene-fade'), 1000); requestAnimationFrame(() => sceneShownResolve()); }
-    if (hud) { hudN++; if (now - hudT > 500) { hud.textContent = Math.round(hudN * 1000 / (now - hudT)) + ' qps · nível ' + lvl + ' (' + tierOf(lvl) + ')'; hudN = 0; hudT = now; } }
+    if (hud) { hudN++; if (now - hudT > 500) { hud.textContent = Math.round(hudN * 1000 / (now - hudT)) + ' qps · nível ' + lvl + ' (' + tierOf(lvl) + ') · ' + roof.renderer.getPixelRatio().toFixed(2) + 'x'; hudN = 0; hudT = now; } }
     if (!det.forced) monitor.frame(now, gap, cap30);
   });
 }
