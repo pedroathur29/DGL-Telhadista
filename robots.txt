@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://pedroathur29.github.io/DGL-Telhadista/sitemap.xml
+Sitemap: https://dgltelhadista.com.br/sitemap.xml
